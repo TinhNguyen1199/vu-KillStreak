@@ -4,12 +4,24 @@
 
 console.log('[KillStreak][WebUI] script.js loaded');
 
-// Startup test: hiển thị kill counter với "1" trong 2 giây để xác nhận WebUI hoạt động
-window.addEventListener('load', function() {
-    console.log('[KillStreak][WebUI] Window loaded — startup test');
-    updateKillCounter(1);
-    setTimeout(function() { updateKillCounter(0); }, 2000);
-});
+// Startup test: TẠO MỚI một div hoàn toàn bằng JS với inline style,
+// KHÔNG phụ thuộc class CSS hay element có sẵn.
+// Nếu thấy ô màu xanh "JS:OK" góc dưới trái → JS chạy được.
+// Nếu KHÔNG thấy → JS hoàn toàn không chạy (vấn đề Gameface bridge).
+(function() {
+    try {
+        var jsTest = document.createElement('div');
+        jsTest.id = 'js-test-marker';
+        jsTest.textContent = 'JS:OK';
+        jsTest.style.cssText = 'position:fixed; bottom:10px; left:10px; ' +
+            'background:#00aa00; color:#ffffff; font-size:28px; ' +
+            'padding:8px 16px; z-index:9999; font-family:Arial,sans-serif;';
+        document.body.appendChild(jsTest);
+        console.log('[KillStreak][WebUI] JS:OK marker appended');
+    } catch (e) {
+        console.error('[KillStreak][WebUI] JS startup test threw:', e);
+    }
+}());
 
 // Thời gian tự động ẩn thông báo (ms)
 var STREAK_DISPLAY_MS = 3000;

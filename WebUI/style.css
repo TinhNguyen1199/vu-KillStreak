@@ -21,9 +21,6 @@ body {
     position: fixed;
     top: 20px;
     right: 20px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
     background: rgba(0, 0, 0, 0.6);
     border: 1px solid rgba(255, 60, 0, 0.6);
     border-radius: 4px;
@@ -32,12 +29,12 @@ body {
     font-size: 22px;
     font-weight: bold;
     text-shadow: 0 0 8px #ff4400;
-    transition: opacity 0.3s;
 }
 
 #kill-icon {
     font-size: 18px;
     opacity: 0.9;
+    margin-right: 6px;
 }
 
 /* ----------------------------------------

@@ -10,6 +10,15 @@ Events:Subscribe('Extension:Loaded', function()
     print('[KillStreak][CLIENT] Extension:Loaded fired — calling WebUI:Init()')
     WebUI:Init()
     WebUI:Show()
+    WebUI:BringToFront()
+end)
+
+-- Re-init khi vào map (Extension:Loaded có thể fire trước khi session sẵn sàng)
+Events:Subscribe('Level:Loaded', function()
+    print('[KillStreak][CLIENT] Level:Loaded fired — re-init WebUI')
+    WebUI:Init()
+    WebUI:Show()
+    WebUI:BringToFront()
 end)
 
 local currentStreak = 0  -- số kill streak hiện tại của người chơi này
