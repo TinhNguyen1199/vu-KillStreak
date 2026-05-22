@@ -1,6 +1,9 @@
 /* Reset */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* Ẩn video elements dùng để phát âm thanh — Gameface không có <audio> */
+video { position: absolute; width: 0; height: 0; pointer-events: none; }
+
 body {
     background: transparent;
     width: 100vw;

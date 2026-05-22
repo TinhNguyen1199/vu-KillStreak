@@ -4,10 +4,12 @@
 
 require('__shared/config')  -- nạp config dùng chung
 
--- Nạp WebUI khi mod khởi chạy
-print('[KillStreak][CLIENT] Mod loaded — loading WebUI')
-WebUI:Load('http://mods/bf3/WebUI/index.html')
-print('[KillStreak][CLIENT] WebUI:Load called')
+print('[KillStreak][CLIENT] Mod loaded — waiting for Extension:Loaded')
+
+Events:Subscribe('Extension:Loaded', function()
+    print('[KillStreak][CLIENT] Extension:Loaded fired — calling WebUI:Init()')
+    WebUI:Init()
+end)
 
 local currentStreak = 0  -- số kill streak hiện tại của người chơi này
 
