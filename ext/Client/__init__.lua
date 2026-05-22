@@ -4,6 +4,9 @@
 
 require('__shared/config')  -- nạp config dùng chung
 
+-- Nạp WebUI khi mod khởi chạy
+WebUI:Load('http://mods/bf3/WebUI/index.html')
+
 local currentStreak = 0  -- số kill streak hiện tại của người chơi này
 
 -- ----------------------------------------
