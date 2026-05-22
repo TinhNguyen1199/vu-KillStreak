@@ -11,6 +11,8 @@ Events:Subscribe('Extension:Loaded', function()
     WebUI:Init()
     WebUI:Show()
     WebUI:BringToFront()
+    -- Inject marker từ Lua để verify client Lua đã chạy (không phụ thuộc log console)
+    WebUI:ExecuteJS("showLuaMarker('LUA:OK (Ext)')")
 end)
 
 -- Re-init khi vào map (Extension:Loaded có thể fire trước khi session sẵn sàng)
@@ -19,6 +21,17 @@ Events:Subscribe('Level:Loaded', function()
     WebUI:Init()
     WebUI:Show()
     WebUI:BringToFront()
+    WebUI:ExecuteJS("showLuaMarker('LUA:OK (Lvl)')")
+end)
+
+-- Update tick — gọi 1 lần sau khi engine sẵn sàng để bắt trường hợp Extension/Level event không fire
+local _luaMarkerShown = false
+Events:Subscribe('Engine:Update', function()
+    if not _luaMarkerShown then
+        _luaMarkerShown = true
+        print('[KillStreak][CLIENT] Engine:Update fired — first tick')
+        WebUI:ExecuteJS("showLuaMarker('LUA:OK (Tick)')")
+    end
 end)
 
 local currentStreak = 0  -- số kill streak hiện tại của người chơi này
@@ -60,6 +73,10 @@ NetEvents:Subscribe('KillStreak:OnKill', function(kills, headshot, streakName, s
     print(string.format('[KillStreak][CLIENT] OnKill received | kills=%d headshot=%s streak="%s" consec_hs=%d hs="%s"',
         kills or 0, tostring(headshot),
         streakName or '', consecutiveHeadshots or 0, hsName or ''))
+
+    -- Marker để verify NetEvent đã tới client (không phụ thuộc log)
+    WebUI:ExecuteJS(string.format("showNetEventMarker('KILL', 'k=%d hs=%s')",
+        kills or 0, tostring(headshot)))
 
     -- Tái tạo streak objects từ primitives
     local streak = nil
@@ -118,6 +135,7 @@ end)
 -- ----------------------------------------
 NetEvents:Subscribe('KillStreak:OnReset', function(oldStreak)
     print('[KillStreak][CLIENT] OnReset received | oldStreak=' .. tostring(oldStreak))
+    WebUI:ExecuteJS(string.format("showNetEventMarker('RESET', 'old=%d')", oldStreak or 0))
     currentStreak = 0
     updateKillCounter(0)
 

@@ -1,17 +1,34 @@
 -- ============================================================
 -- SERVER: Theo dõi kill và gửi sự kiện về client
+-- Dùng event `Player:Killed` (fire cho cả kill bot lẫn PvP)
+-- Signature: (victim, inflictor, position, weapon, isRoadKill, isHeadShot, wasInRevive)
 -- ============================================================
 
-require('__shared/config')  -- nạp config dùng chung
+require('__shared/config')
 
-print('[KillStreak][SERVER] Mod loaded — streaks: ' .. #KillStreakConfig.streaks .. ', hs milestones: ' .. #KillStreakConfig.headshotStreaks)
+print('[KillStreak][SERVER] Mod loaded — streaks: ' .. #KillStreakConfig.streaks
+    .. ', hs milestones: ' .. #KillStreakConfig.headshotStreaks)
 
-local playerKills     = {}  -- bảng lưu số kill của từng người chơi: { [playerId] = số_kill }
-local playerHeadshots = {}  -- số headshot liên tiếp: { [playerId] = số_headshot_liên_tiếp }
+local playerKills     = {}
+local playerHeadshots = {}
 
 -- ----------------------------------------
--- Hàm: tìm headshot streak milestone khớp đúng mốc
+-- Helper
 -- ----------------------------------------
+local function pname(p)
+    if p == nil then return 'nil' end
+    local ok, n = pcall(function() return p.name end)
+    if ok and n then return n end
+    return tostring(p)
+end
+
+-- Bot detection: BF3/NAT-bots dùng tiền tố BOT_
+local function isBot(player)
+    if player == nil then return false end
+    local n = player.name or ''
+    return n:sub(1, 4) == 'BOT_'
+end
+
 local function getHeadshotStreak(count)
     for _, hs in ipairs(KillStreakConfig.headshotStreaks) do
         if count == hs.count then
@@ -22,52 +39,62 @@ local function getHeadshotStreak(count)
 end
 
 -- ----------------------------------------
--- Hàm: tìm streak phù hợp với số kill hiện tại
+-- Event chính: Player:Killed
 -- ----------------------------------------
-local function getStreak(kills)
-    local result = nil
-    for _, streak in ipairs(KillStreakConfig.streaks) do
-        if kills >= streak.kills then
-            result = streak  -- lấy streak cao nhất đạt được
-        end
+Events:Subscribe('Player:Killed', function(victim, inflictor, position, weapon, isRoadKill, isHeadShot, wasInRevive)
+    if victim == nil then
+        print('[KillStreak][SERVER] Player:Killed but victim=nil — skipped')
+        return
     end
-    return result
-end
 
--- ----------------------------------------
--- Sự kiện: Người chơi hạ gục địch
--- ----------------------------------------
-Events:Subscribe('Player:Kill', function(killer, victim, weapon, headshot)
-    -- Bỏ qua nếu tự bắn hoặc không có killer
-    if killer == nil or victim == nil then
-        print('[KillStreak][SERVER] Player:Kill fired but killer or victim is nil — skipped')
+    local killer   = inflictor   -- có thể nil (env death) hoặc Player object
+    local headshot = isHeadShot == true
+
+    -- ===== 1. Xử lý reset streak của VICTIM (chỉ nếu là real player) =====
+    if not isBot(victim) then
+        local vid = victim.id
+        local oldStreak = playerKills[vid] or 0
+        playerKills[vid]     = 0
+        playerHeadshots[vid] = 0
+        print(string.format('[KillStreak][SERVER] %s died — streak reset from %d',
+            victim.name, oldStreak))
+        NetEvents:SendTo('KillStreak:OnReset', victim, oldStreak)
+    end
+
+    -- ===== 2. Bỏ qua nếu không có killer hoặc tự sát =====
+    if killer == nil then
+        print(string.format('[KillStreak][SERVER] %s died with no killer (weapon=%s) — env death',
+            pname(victim), tostring(weapon)))
         return
     end
     if killer == victim then
-        print('[KillStreak][SERVER] ' .. killer.name .. ' self-killed — skipped')
+        print(string.format('[KillStreak][SERVER] %s self-killed — skipped', pname(killer)))
         return
     end
 
-    local id = killer.id
-
-    -- Khởi tạo bộ đếm nếu chưa có
-    if playerKills[id] == nil then
-        playerKills[id] = 0
+    -- ===== 3. Tăng kill count cho KILLER (chỉ track real player) =====
+    if isBot(killer) then
+        print(string.format('[KillStreak][SERVER] %s (bot) killed %s — no streak tracking',
+            killer.name, pname(victim)))
+        return
     end
 
-    -- Tăng kill count
-    playerKills[id] = playerKills[id] + 1
-    local totalKills = playerKills[id]
+    local kid = killer.id
+    if playerKills[kid] == nil then
+        playerKills[kid] = 0
+    end
+    playerKills[kid] = playerKills[kid] + 1
+    local totalKills = playerKills[kid]
 
-    -- Track headshot liên tiếp: tăng nếu headshot, reset nếu không
+    -- Headshot streak: tăng nếu hs, reset nếu không
     if headshot then
-        playerHeadshots[id] = (playerHeadshots[id] or 0) + 1
+        playerHeadshots[kid] = (playerHeadshots[kid] or 0) + 1
     else
-        playerHeadshots[id] = 0
+        playerHeadshots[kid] = 0
     end
-    local consecutiveHeadshots = playerHeadshots[id]
+    local consecutiveHeadshots = playerHeadshots[kid]
 
-    -- Tìm xem có đạt kill streak mới không
+    -- ===== 4. Tìm milestone =====
     local streak = nil
     for _, s in ipairs(KillStreakConfig.streaks) do
         if totalKills == s.kills then
@@ -75,16 +102,15 @@ Events:Subscribe('Player:Kill', function(killer, victim, weapon, headshot)
             break
         end
     end
-
-    -- Tìm xem có đạt headshot streak milestone không
     local hsStreak = getHeadshotStreak(consecutiveHeadshots)
 
-    local streakInfo  = streak   and ('streak=' .. streak.name)   or 'no-streak'
+    local streakInfo  = streak   and ('streak=' .. streak.name)        or 'no-streak'
     local hsInfo      = hsStreak and ('hs-milestone=' .. hsStreak.name) or 'no-hs-milestone'
     print(string.format('[KillStreak][SERVER] %s killed %s | kills=%d hs=%s consec_hs=%d | %s | %s',
-        killer.name, victim.name, totalKills, tostring(headshot), consecutiveHeadshots, streakInfo, hsInfo))
+        killer.name, pname(victim), totalKills, tostring(headshot), consecutiveHeadshots,
+        streakInfo, hsInfo))
 
-    -- Gửi thông tin về client của người kill (chỉ dùng primitive types, không dùng table)
+    -- ===== 5. Gửi NetEvent về client của killer =====
     local streakName      = streak   and streak.name            or ''
     local streakSound     = streak   and streak.sound           or ''
     local streakImportant = streak   ~= nil and streak.important == true
@@ -100,25 +126,7 @@ Events:Subscribe('Player:Kill', function(killer, victim, weapon, headshot)
 end)
 
 -- ----------------------------------------
--- Sự kiện: Người chơi bị chết → reset streak
--- ----------------------------------------
-Events:Subscribe('Player:Killed', function(player, killer, weapon, headshot)
-    if player == nil then
-        print('[KillStreak][SERVER] Player:Killed fired but player is nil — skipped')
-        return
-    end
-
-    local id = player.id
-    local oldStreak = playerKills[id] or 0
-    playerKills[id]     = 0
-    playerHeadshots[id] = 0
-
-    print(string.format('[KillStreak][SERVER] %s died — streak reset from %d', player.name, oldStreak))
-    NetEvents:SendTo('KillStreak:OnReset', player, oldStreak)
-end)
-
--- ----------------------------------------
--- Sự kiện: Người chơi thoát game → xóa dữ liệu
+-- Player thoát game → xóa dữ liệu
 -- ----------------------------------------
 Events:Subscribe('Player:Left', function(player)
     if player ~= nil then

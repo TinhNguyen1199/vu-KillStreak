@@ -34,17 +34,7 @@
         <div id="ended-count"></div>
     </div>
 
-    <!-- Gameface không hỗ trợ <audio>, dùng <video> để phát âm thanh -->
-    <video id="snd-kill-normal"      src="sounds/kill_normal.wav"      preload="auto"></video>
-    <video id="snd-kill-headshot"    src="sounds/kill_headshot.wav"    preload="auto"></video>
-    <video id="snd-headshot-double"  src="sounds/headshot_double.wav"  preload="auto"></video>
-    <video id="snd-headshot-triple"  src="sounds/headshot_triple.wav"  preload="auto"></video>
-    <video id="snd-headshot-multi"   src="sounds/headshot_multi.wav"   preload="auto"></video>
-    <video id="snd-streak-3"         src="sounds/streak_3.wav"         preload="auto"></video>
-    <video id="snd-streak-5"         src="sounds/streak_5.wav"         preload="auto"></video>
-    <video id="snd-streak-7"         src="sounds/streak_7.wav"         preload="auto"></video>
-    <video id="snd-streak-10"        src="sounds/streak_10.wav"        preload="auto"></video>
-    <video id="snd-streak-15"        src="sounds/streak_15.wav"        preload="auto"></video>
+    <!-- Audio được load bằng Web Audio API trong script.js (Gameface không phát qua HTMLMediaElement) -->
 
     <script src="script.js"></script>
 </body>
