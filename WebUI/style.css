@@ -1,0 +1,149 @@
+/* Reset */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: transparent;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Arial Black', Arial, sans-serif;
+    pointer-events: none; /* Không chặn click game */
+    user-select: none;
+}
+
+/* ----------------------------------------
+   Kill Counter — góc trên phải
+---------------------------------------- */
+#kill-counter {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 60, 0, 0.6);
+    border-radius: 4px;
+    padding: 6px 12px;
+    color: #ff6600;
+    font-size: 22px;
+    font-weight: bold;
+    text-shadow: 0 0 8px #ff4400;
+    transition: opacity 0.3s;
+}
+
+#kill-icon {
+    font-size: 18px;
+    opacity: 0.9;
+}
+
+/* ----------------------------------------
+   Streak Message — giữa màn hình
+---------------------------------------- */
+#streak-message {
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    animation: streakPop 0.3s ease-out;
+}
+
+#streak-name {
+    font-size: 48px;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow:
+        0 0 10px #ff6600,
+        0 0 30px #ff3300,
+        2px 2px 0 #000;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+#streak-kills {
+    font-size: 24px;
+    color: #ffcc00;
+    text-shadow: 0 0 8px #ff8800, 2px 2px 0 #000;
+    margin-top: 6px;
+    letter-spacing: 2px;
+}
+
+/* ----------------------------------------
+   Headshot Message — giữa màn hình, bên dưới streak
+---------------------------------------- */
+#headshot-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    animation: headshotPop 0.25s ease-out;
+}
+
+#headshot-name {
+    font-size: 36px;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow:
+        0 0 10px #00ccff,
+        0 0 28px #0066ff,
+        2px 2px 0 #000;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+#headshot-count {
+    font-size: 20px;
+    color: #66eeff;
+    text-shadow: 0 0 8px #0099ff, 2px 2px 0 #000;
+    margin-top: 4px;
+    letter-spacing: 2px;
+}
+
+/* ----------------------------------------
+   Streak Ended
+---------------------------------------- */
+#streak-ended {
+    position: fixed;
+    top: 38%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+#ended-text {
+    font-size: 28px;
+    color: #aaaaaa;
+    text-shadow: 2px 2px 0 #000;
+}
+
+#ended-count {
+    font-size: 18px;
+    color: #888888;
+    text-shadow: 1px 1px 0 #000;
+}
+
+/* ----------------------------------------
+   Utility
+---------------------------------------- */
+.hidden {
+    display: none !important;
+}
+
+@keyframes headshotPop {
+    0%   { transform: translateX(-50%) scale(0.7); opacity: 0; }
+    60%  { transform: translateX(-50%) scale(1.08); opacity: 1; }
+    100% { transform: translateX(-50%) scale(1);    opacity: 1; }
+}
+
+@keyframes streakPop {
+    0%   { transform: translateX(-50%) scale(0.5); opacity: 0; }
+    70%  { transform: translateX(-50%) scale(1.1); opacity: 1; }
+    100% { transform: translateX(-50%) scale(1);   opacity: 1; }
+}
+
+@keyframes fadeOut {
+    0%   { opacity: 1; }
+    100% { opacity: 0; }
+}

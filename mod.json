@@ -1,0 +1,7 @@
+{
+  "Name": "KillStreak",
+  "Version": "1.0.0",
+  "Description": "Custom kill sounds and kill streak announcements for BF3",
+  "HasVeniceEXT": true,
+  "HasWebUI": true
+}

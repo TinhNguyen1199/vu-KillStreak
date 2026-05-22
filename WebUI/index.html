@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>KillStreak HUD</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Hiển thị số kill streak góc trên phải -->
+    <div id="kill-counter" class="hidden">
+        <span id="kill-icon">☠</span>
+        <span id="kill-number">0</span>
+    </div>
+
+    <!-- Thông báo streak lớn ở giữa màn hình -->
+    <div id="streak-message" class="hidden">
+        <div id="streak-name">KILLING SPREE</div>
+        <div id="streak-kills">3 KILLS</div>
+    </div>
+
+    <!-- Thông báo headshot liên tiếp -->
+    <div id="headshot-message" class="hidden">
+        <div id="headshot-name">DOUBLE HEADSHOT</div>
+        <div id="headshot-count">2x</div>
+    </div>
+
+    <!-- Thông báo streak kết thúc -->
+    <div id="streak-ended" class="hidden">
+        <div id="ended-text">Streak ended</div>
+        <div id="ended-count"></div>
+    </div>
+
+    <!-- Audio elements — đặt file .wav vào cùng thư mục WebUI/ -->
+    <audio id="snd-kill-normal"      src="sounds/kill_normal.wav"      preload="auto"></audio>
+    <audio id="snd-kill-headshot"    src="sounds/kill_headshot.wav"    preload="auto"></audio>
+    <audio id="snd-headshot-double"  src="sounds/headshot_double.wav"  preload="auto"></audio>
+    <audio id="snd-headshot-triple"  src="sounds/headshot_triple.wav"  preload="auto"></audio>
+    <audio id="snd-headshot-multi"   src="sounds/headshot_multi.wav"   preload="auto"></audio>
+    <audio id="snd-streak-3"         src="sounds/streak_3.wav"         preload="auto"></audio>
+    <audio id="snd-streak-5"         src="sounds/streak_5.wav"         preload="auto"></audio>
+    <audio id="snd-streak-7"         src="sounds/streak_7.wav"         preload="auto"></audio>
+    <audio id="snd-streak-10"        src="sounds/streak_10.wav"        preload="auto"></audio>
+    <audio id="snd-streak-15"        src="sounds/streak_15.wav"        preload="auto"></audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
