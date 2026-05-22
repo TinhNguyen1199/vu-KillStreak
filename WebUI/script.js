@@ -2,6 +2,8 @@
 // script.js — Xử lý âm thanh và hiển thị HUD
 // ============================================================
 
+console.log('[KillStreak][WebUI] script.js loaded');
+
 // Thời gian tự động ẩn thông báo (ms)
 var STREAK_DISPLAY_MS = 3000;
 var ENDED_DISPLAY_MS  = 2000;
@@ -33,6 +35,7 @@ function stopCurrentKillSound() {
 }
 
 function playKillSound(soundName) {
+    console.log('[KillStreak][WebUI] playKillSound:', soundName);
     var map = {
         'kill_normal':      'snd-kill-normal',
         'kill_headshot':    'snd-kill-headshot',
@@ -47,21 +50,28 @@ function playKillSound(soundName) {
     };
 
     var id = map[soundName];
-    if (!id) return;
+    if (!id) {
+        console.warn('[KillStreak][WebUI] Unknown sound name:', soundName);
+        return;
+    }
 
     var el = document.getElementById(id);
-    if (!el) return;
+    if (!el) {
+        console.error('[KillStreak][WebUI] Audio element not found for id:', id);
+        return;
+    }
 
     el.currentTime = 0;
-    el.play().catch(function(e) {
-        console.warn('[KillStreak] Cannot play sound:', soundName, e);
-    });
+    el.play()
+        .then(function() { console.log('[KillStreak][WebUI] Playing:', soundName); })
+        .catch(function(e) { console.warn('[KillStreak][WebUI] Cannot play sound:', soundName, e); });
 }
 
 // ----------------------------------------
 // Cập nhật bộ đếm kill góc trên phải
 // ----------------------------------------
 function updateKillCounter(kills) {
+    console.log('[KillStreak][WebUI] updateKillCounter:', kills);
     var counter = document.getElementById('kill-counter');
     var number  = document.getElementById('kill-number');
 
@@ -84,6 +94,7 @@ function updateKillCounter(kills) {
 // Hiển thị thông báo streak lớn
 // ----------------------------------------
 function showStreakMessage(streakName, kills) {
+    console.log('[KillStreak][WebUI] showStreakMessage:', streakName, kills);
     var el       = document.getElementById('streak-message');
     var nameEl   = document.getElementById('streak-name');
     var killsEl  = document.getElementById('streak-kills');
@@ -112,6 +123,7 @@ function showStreakMessage(streakName, kills) {
 // Hiển thị thông báo headshot liên tiếp
 // ----------------------------------------
 function showHeadshotMessage(name, count) {
+    console.log('[KillStreak][WebUI] showHeadshotMessage:', name, count);
     var el      = document.getElementById('headshot-message');
     var nameEl  = document.getElementById('headshot-name');
     var countEl = document.getElementById('headshot-count');
@@ -138,6 +150,7 @@ function showHeadshotMessage(name, count) {
 // Hiển thị thông báo streak kết thúc
 // ----------------------------------------
 function showStreakEnded(oldStreak) {
+    console.log('[KillStreak][WebUI] showStreakEnded:', oldStreak);
     var el      = document.getElementById('streak-ended');
     var textEl  = document.getElementById('ended-text');
     var countEl = document.getElementById('ended-count');

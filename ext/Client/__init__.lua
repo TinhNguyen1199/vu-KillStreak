@@ -5,7 +5,9 @@
 require('__shared/config')  -- nạp config dùng chung
 
 -- Nạp WebUI khi mod khởi chạy
+print('[KillStreak][CLIENT] Mod loaded — loading WebUI')
 WebUI:Load('http://mods/bf3/WebUI/index.html')
+print('[KillStreak][CLIENT] WebUI:Load called')
 
 local currentStreak = 0  -- số kill streak hiện tại của người chơi này
 
@@ -43,6 +45,11 @@ end
 -- Nhận sự kiện kill từ server
 -- ----------------------------------------
 NetEvents:Subscribe('KillStreak:OnKill', function(kills, headshot, streak, consecutiveHeadshots, hsStreak)
+    print(string.format('[KillStreak][CLIENT] OnKill received | kills=%d headshot=%s streak=%s consec_hs=%d',
+        kills, tostring(headshot),
+        streak and streak.name or 'none',
+        consecutiveHeadshots or 0))
+
     currentStreak = kills
 
     -- Cập nhật counter trên HUD
@@ -91,6 +98,7 @@ end)
 -- Nhận sự kiện reset từ server
 -- ----------------------------------------
 NetEvents:Subscribe('KillStreak:OnReset', function(oldStreak)
+    print('[KillStreak][CLIENT] OnReset received | oldStreak=' .. tostring(oldStreak))
     currentStreak = 0
     updateKillCounter(0)
 
