@@ -4,6 +4,13 @@
 
 console.log('[KillStreak][WebUI] script.js loaded');
 
+// Startup test: hiển thị kill counter với "1" trong 2 giây để xác nhận WebUI hoạt động
+window.addEventListener('load', function() {
+    console.log('[KillStreak][WebUI] Window loaded — startup test');
+    updateKillCounter(1);
+    setTimeout(function() { updateKillCounter(0); }, 2000);
+});
+
 // Thời gian tự động ẩn thông báo (ms)
 var STREAK_DISPLAY_MS = 3000;
 var ENDED_DISPLAY_MS  = 2000;
@@ -62,9 +69,13 @@ function playKillSound(soundName) {
     }
 
     el.currentTime = 0;
-    el.play()
-        .then(function() { console.log('[KillStreak][WebUI] Playing:', soundName); })
-        .catch(function(e) { console.warn('[KillStreak][WebUI] Cannot play sound:', soundName, e); });
+    var playResult = el.play();
+    // Gameface có thể không trả về Promise — kiểm tra trước khi gọi .then/.catch
+    if (playResult && typeof playResult.then === 'function') {
+        playResult
+            .then(function() { console.log('[KillStreak][WebUI] Playing:', soundName); })
+            .catch(function(e) { console.warn('[KillStreak][WebUI] Cannot play sound:', soundName, e); });
+    }
 }
 
 // ----------------------------------------

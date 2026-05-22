@@ -9,6 +9,7 @@ print('[KillStreak][CLIENT] Mod loaded — waiting for Extension:Loaded')
 Events:Subscribe('Extension:Loaded', function()
     print('[KillStreak][CLIENT] Extension:Loaded fired — calling WebUI:Init()')
     WebUI:Init()
+    WebUI:Show()
 end)
 
 local currentStreak = 0  -- số kill streak hiện tại của người chơi này
@@ -44,18 +45,27 @@ local function updateKillCounter(kills)
 end
 
 -- ----------------------------------------
--- Nhận sự kiện kill từ server
+-- Nhận sự kiện kill từ server (nhận primitives, tái tạo objects ở client)
 -- ----------------------------------------
-NetEvents:Subscribe('KillStreak:OnKill', function(kills, headshot, streak, consecutiveHeadshots, hsStreak)
-    print(string.format('[KillStreak][CLIENT] OnKill received | kills=%d headshot=%s streak=%s consec_hs=%d',
-        kills, tostring(headshot),
-        streak and streak.name or 'none',
-        consecutiveHeadshots or 0))
+NetEvents:Subscribe('KillStreak:OnKill', function(kills, headshot, streakName, streakSound, streakImportant, consecutiveHeadshots, hsName, hsSound)
+    print(string.format('[KillStreak][CLIENT] OnKill received | kills=%d headshot=%s streak="%s" consec_hs=%d hs="%s"',
+        kills or 0, tostring(headshot),
+        streakName or '', consecutiveHeadshots or 0, hsName or ''))
 
-    currentStreak = kills
+    -- Tái tạo streak objects từ primitives
+    local streak = nil
+    if streakName and streakName ~= '' then
+        streak = { name = streakName, sound = streakSound, important = streakImportant == true }
+    end
+    local hsStreak = nil
+    if hsName and hsName ~= '' then
+        hsStreak = { name = hsName, sound = hsSound }
+    end
+
+    currentStreak = kills or 0
 
     -- Cập nhật counter trên HUD
-    updateKillCounter(kills)
+    updateKillCounter(currentStreak)
 
     local importantStreak = streak ~= nil and streak.important == true
 
@@ -64,7 +74,6 @@ NetEvents:Subscribe('KillStreak:OnKill', function(kills, headshot, streak, conse
         WebUI:ExecuteJS('stopCurrentKillSound()')
         playSound(streak.sound)
     elseif hsStreak ~= nil then
-        -- Đạt mốc headshot liên tiếp: milestone sound thay thế headshot sound thường
         WebUI:ExecuteJS('stopCurrentKillSound()')
         playSound(hsStreak.sound)
     elseif headshot then
@@ -76,14 +85,13 @@ NetEvents:Subscribe('KillStreak:OnKill', function(kills, headshot, streak, conse
 
     -- Hiển thị thông báo headshot milestone nếu đạt mốc
     if hsStreak ~= nil then
-        showHeadshotMessage(hsStreak.name, consecutiveHeadshots)
+        showHeadshotMessage(hsStreak.name, consecutiveHeadshots or 0)
     end
 
     -- Hiển thị streak message + phát streak sound nếu đạt mốc kill
     if streak ~= nil then
-        showStreakMessage(streak.name, kills)
+        showStreakMessage(streak.name, currentStreak)
         if not importantStreak then
-            -- Delay để tránh chồng với kill sound đang phát
             local timer = Timer()
             timer:Start(0.3)
             timer:Subscribe('Update', function(t, dt)

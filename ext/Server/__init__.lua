@@ -84,9 +84,19 @@ Events:Subscribe('Player:Kill', function(killer, victim, weapon, headshot)
     print(string.format('[KillStreak][SERVER] %s killed %s | kills=%d hs=%s consec_hs=%d | %s | %s',
         killer.name, victim.name, totalKills, tostring(headshot), consecutiveHeadshots, streakInfo, hsInfo))
 
-    -- Gửi thông tin về client của người kill
-    NetEvents:SendTo('KillStreak:OnKill', killer, totalKills, headshot, streak, consecutiveHeadshots, hsStreak)
-    print('[KillStreak][SERVER] NetEvent sent to ' .. killer.name)
+    -- Gửi thông tin về client của người kill (chỉ dùng primitive types, không dùng table)
+    local streakName      = streak   and streak.name            or ''
+    local streakSound     = streak   and streak.sound           or ''
+    local streakImportant = streak   ~= nil and streak.important == true
+    local hsName          = hsStreak and hsStreak.name          or ''
+    local hsSound         = hsStreak and hsStreak.sound         or ''
+
+    NetEvents:SendTo('KillStreak:OnKill', killer,
+        totalKills, headshot,
+        streakName, streakSound, streakImportant,
+        consecutiveHeadshots, hsName, hsSound)
+    print(string.format('[KillStreak][SERVER] NetEvent sent to %s | streakName="%s" hsName="%s"',
+        killer.name, streakName, hsName))
 end)
 
 -- ----------------------------------------
