@@ -11,8 +11,8 @@ Events:Subscribe('Extension:Loaded', function()
     WebUI:Init()
     WebUI:Show()
     WebUI:BringToFront()
-    -- Inject marker từ Lua để verify client Lua đã chạy (không phụ thuộc log console)
-    WebUI:ExecuteJS("showLuaMarker('LUA:OK (Ext)')")
+    -- Inject marker từ Lua để verify client Lua đã chạy (không phụ thuộc log console) -- DISABLED
+    -- WebUI:ExecuteJS("showLuaMarker('LUA:OK (Ext)')")
 end)
 
 -- Re-init khi vào map (Extension:Loaded có thể fire trước khi session sẵn sàng)
@@ -21,7 +21,7 @@ Events:Subscribe('Level:Loaded', function()
     WebUI:Init()
     WebUI:Show()
     WebUI:BringToFront()
-    WebUI:ExecuteJS("showLuaMarker('LUA:OK (Lvl)')")
+    -- WebUI:ExecuteJS("showLuaMarker('LUA:OK (Lvl)')")
 end)
 
 -- Update tick — gọi 1 lần sau khi engine sẵn sàng để bắt trường hợp Extension/Level event không fire
@@ -30,7 +30,7 @@ Events:Subscribe('Engine:Update', function()
     if not _luaMarkerShown then
         _luaMarkerShown = true
         print('[KillStreak][CLIENT] Engine:Update fired — first tick')
-        WebUI:ExecuteJS("showLuaMarker('LUA:OK (Tick)')")
+        -- WebUI:ExecuteJS("showLuaMarker('LUA:OK (Tick)')")
     end
 end)
 
@@ -77,8 +77,8 @@ NetEvents:Subscribe('KillStreak:OnKill', function(kills, headshot, streakName, s
         streakName or '', consecutiveHeadshots or 0, victimName or ''))
 
     -- Marker để verify NetEvent đã tới client (không phụ thuộc log)
-    WebUI:ExecuteJS(string.format("showNetEventMarker('KILL', 'k=%d hs=%s')",
-        kills or 0, tostring(headshot)))
+    -- WebUI:ExecuteJS(string.format("showNetEventMarker('KILL', 'k=%d hs=%s')",
+    --     kills or 0, tostring(headshot)))
 
     -- Tái tạo streak objects từ primitives
     local streak = nil
@@ -128,13 +128,15 @@ NetEvents:Subscribe('KillStreak:OnKill', function(kills, headshot, streakName, s
 
     -- Hiển thị badge headshot đơn cho mọi headshot kill
     if headshot then
-        WebUI:ExecuteJS('showHeadshotBadge()')
+        WebUI:ExecuteJS(string.format('showHeadshotBadge(%d)', consecutiveHeadshots or 1))
     end
 
--- Hiển thị thông báo headshot milestone nếu đạt mốc
+-- DISABLED: headshot text removed, icons only
+--[[
     if hsStreak ~= nil then
         showHeadshotMessage(hsStreak.name, consecutiveHeadshots or 0)
     end
+--]]
 
     -- Hiển thị streak message + phát streak sound nếu đạt mốc kill
     if streak ~= nil then
@@ -205,7 +207,7 @@ end)
 NetEvents:Subscribe('KillStreak:OnReset', function(oldStreak, killerName)
     print(string.format('[KillStreak][CLIENT] OnReset received | oldStreak=%d killerName="%s"',
         oldStreak or 0, killerName or ''))
-    WebUI:ExecuteJS(string.format("showNetEventMarker('RESET', 'old=%d')", oldStreak or 0))
+    -- WebUI:ExecuteJS(string.format("showNetEventMarker('RESET', 'old=%d')", oldStreak or 0))
     currentStreak = 0
     updateKillCounter(0)
     WebUI:ExecuteJS("updateStreakProgress('', 0)")

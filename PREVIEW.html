@@ -71,11 +71,11 @@
 
         /* ============== KS UI STYLING ============== */
 
-        /* Kill Counter — góc trên phải */
+        /* Kill Counter — góc trên trái */
         #kill-counter {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 30px;
+            left: 30px;
             background: rgba(0, 0, 0, 0.6);
             border: 1px solid rgba(255, 60, 0, 0.6);
             border-radius: 4px;
@@ -100,12 +100,12 @@
             display: block;
         }
 
-        /* Streak Progress */
+        /* Streak Progress — bên dưới kill counter (trái) */
         #streak-progress {
             position: fixed;
-            top: 56px;
-            right: 20px;
-            text-align: right;
+            top: 68px;
+            left: 30px;
+            text-align: left;
         }
 
         #progress-text {
@@ -122,7 +122,7 @@
         /* Revenge Badge */
         #revenge-badge {
             position: fixed;
-            top: 6%;
+            top: 10%;
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
@@ -132,13 +132,9 @@
         #revenge-text {
             display: block;
             font-size: 52px;
-            text-align: center;
             font-weight: 900;
             color: #ff6600;
-            text-shadow:
-                0 0 12px #ff4400,
-                0 0 35px #aa2200,
-                2px 2px 0 #000;
+            text-shadow: 0 0 12px #ff4400, 0 0 35px #aa2200, 2px 2px 0 #000;
             letter-spacing: 6px;
             text-transform: uppercase;
         }
@@ -165,10 +161,7 @@
             font-size: 38px;
             font-weight: 900;
             color: #ffffff;
-            text-shadow:
-                0 0 10px #0088ff,
-                0 0 28px #0044aa,
-                2px 2px 0 #000;
+            text-shadow: 0 0 10px #0088ff, 0 0 28px #0044aa, 2px 2px 0 #000;
             letter-spacing: 4px;
             text-transform: uppercase;
         }
@@ -184,7 +177,7 @@
         /* First Blood */
         #firstblood-badge {
             position: fixed;
-            top: 6%;
+            top: 10%;
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
@@ -194,34 +187,26 @@
         #firstblood-text {
             display: block;
             font-size: 52px;
-            text-align: center;
             font-weight: 900;
             color: #ff2222;
-            text-shadow:
-                0 0 12px #ff0000,
-                0 0 35px #880000,
-                2px 2px 0 #000;
+            text-shadow: 0 0 12px #ff0000, 0 0 35px #880000, 2px 2px 0 #000;
             letter-spacing: 6px;
             text-transform: uppercase;
         }
 
-        /* Streak Message */
+        /* Streak Message — top-center */
         #streak-message {
             position: fixed;
             top: 6%;
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
+            animation: streakFade 0.5s ease-out;
         }
 
         #streak-name {
             font-size: 48px;
             font-weight: 900;
-            color: #ffffff;
-            text-shadow:
-                0 0 10px #ff6600,
-                0 0 30px #ff3300,
-                2px 2px 0 #000;
             letter-spacing: 4px;
             text-transform: uppercase;
         }
@@ -234,36 +219,54 @@
             letter-spacing: 2px;
         }
 
+        /* Per-streak colors */
+        .sk-killingspree #streak-name {
+            color: #ffaa00;
+            text-shadow: 0 0 12px #ff8800, 0 0 30px #ff6600, 2px 2px 0 #000;
+        }
+        .sk-rampage #streak-name {
+            color: #ff6600;
+            text-shadow: 0 0 12px #ff4400, 0 0 30px #cc2200, 2px 2px 0 #000;
+        }
+        .sk-dominating #streak-name {
+            color: #ff3300;
+            text-shadow: 0 0 12px #ff2200, 0 0 35px #cc0000, 2px 2px 0 #000;
+        }
+        .sk-unstoppable #streak-name {
+            color: #cc44ff;
+            text-shadow: 0 0 12px #aa00ff, 0 0 35px #6600cc, 2px 2px 0 #000;
+        }
+        .sk-godlike #streak-name {
+            color: #ffffff;
+            text-shadow: 0 0 15px #ffdd00, 0 0 40px #ffaa00, 2px 2px 0 #000;
+        }
+
         /* Headshot Badge */
         #headshot-badge {
             position: fixed;
-            top: 12%;
+            top: 15%;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(160, 0, 0, 0.75);
-            border: 1px solid rgba(255, 80, 80, 0.8);
-            border-radius: 4px;
-            padding: 5px 18px;
-            text-align: center;
-            white-space: nowrap;
             display: flex;
+            gap: 8px;
             align-items: center;
             justify-content: center;
         }
 
-        #headshot-badge-text {
-            display: block;
-            font-size: 20px;
-            font-weight: 900;
-            color: #ffffff;
-            text-shadow: 0 0 8px #ff4444, 1px 1px 0 #000;
-            letter-spacing: 3px;
+        .headshot-icon {
+            width: 64px;
+            height: 64px;
+            background-image: url('WebUI/images/headshot.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            filter: drop-shadow(0 0 8px #ff0000) drop-shadow(0 0 16px #cc0000);
         }
 
         /* Headshot Message */
         #headshot-message {
             position: fixed;
-            top: 16%;
+            top: 22%;
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
@@ -273,10 +276,7 @@
             font-size: 36px;
             font-weight: 900;
             color: #ffffff;
-            text-shadow:
-                0 0 10px #00ccff,
-                0 0 28px #0066ff,
-                2px 2px 0 #000;
+            text-shadow: 0 0 10px #00ccff, 0 0 28px #0066ff, 2px 2px 0 #000;
             letter-spacing: 3px;
             text-transform: uppercase;
         }
@@ -292,39 +292,45 @@
         /* Multi-Kill Badge */
         #multikill-badge {
             position: fixed;
-            top: 22%;
+            top: 10%;
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
             white-space: nowrap;
         }
 
-        #multikill-count {
-            display: block;
-            font-size: 20px;
-            font-weight: 900;
-            color: #ffdd00;
-            text-shadow: 0 0 10px #ffaa00, 2px 2px 0 #000;
-            letter-spacing: 2px;
-        }
-
         #multikill-name {
             display: block;
-            font-size: 36px;
             font-weight: 900;
-            color: #ffffff;
-            text-shadow:
-                0 0 10px #ffcc00,
-                0 0 28px #ff8800,
-                2px 2px 0 #000;
-            letter-spacing: 4px;
+            letter-spacing: 5px;
             text-transform: uppercase;
+        }
+
+        .mk-double #multikill-name {
+            font-size: 38px;
+            color: #ffdd00;
+            text-shadow: 0 0 12px #ffaa00, 0 0 30px #ff8800, 2px 2px 0 #000;
+        }
+        .mk-triple #multikill-name {
+            font-size: 44px;
+            color: #ff8800;
+            text-shadow: 0 0 12px #ff6600, 0 0 35px #ff4400, 2px 2px 0 #000;
+        }
+        .mk-quad #multikill-name {
+            font-size: 50px;
+            color: #ff3300;
+            text-shadow: 0 0 15px #ff2200, 0 0 40px #cc0000, 2px 2px 0 #000;
+        }
+        .mk-rampage #multikill-name {
+            font-size: 56px;
+            color: #cc44ff;
+            text-shadow: 0 0 15px #aa00ff, 0 0 45px #6600cc, 2px 2px 0 #000;
         }
 
         /* Streak Ended */
         #streak-ended {
             position: fixed;
-            top: 6%;
+            top: 40%;
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
@@ -332,14 +338,28 @@
 
         #ended-text {
             font-size: 28px;
-            color: #aaaaaa;
             text-shadow: 2px 2px 0 #000;
+        }
+
+        .ended-by-player #ended-text {
+            color: #ff4444;
+        }
+
+        .ended-env #ended-text {
+            color: #aaaaaa;
         }
 
         #ended-count {
             font-size: 18px;
-            color: #888888;
             text-shadow: 1px 1px 0 #000;
+        }
+
+        .ended-by-player #ended-count {
+            color: #ff8888;
+        }
+
+        .ended-env #ended-count {
+            color: #888888;
         }
 
         .hidden {
@@ -383,10 +403,8 @@
         <div id="streak-kills">3 KILLS</div>
     </div>
 
-    <!-- Headshot Badge -->
-    <div id="headshot-badge" class="hidden">
-        <div id="headshot-badge-text">HEADSHOT</div>
-    </div>
+    <!-- Headshot Badge (image) -->
+    <div id="headshot-badge" class="hidden"></div>
 
     <!-- Headshot Message -->
     <div id="headshot-message" class="hidden">
@@ -395,8 +413,7 @@
     </div>
 
     <!-- Multi-Kill Badge -->
-    <div id="multikill-badge" class="hidden">
-        <div id="multikill-count">2x</div>
+    <div id="multikill-badge" class="hidden mk-double">
         <div id="multikill-name">DOUBLE KILL</div>
     </div>
 
@@ -404,12 +421,6 @@
     <div id="streak-ended" class="hidden">
         <div id="ended-text">Streak Ended</div>
         <div id="ended-count">15 kill streak</div>
-    </div>
-
-    <!-- Victim Badge (Enhanced Notification) -->
-    <div id="victim-badge" class="hidden" style="position:fixed; top:28%; left:50%; transform:translateX(-50%); text-align:center; white-space:nowrap;">
-        <div id="victim-label" style="font-size:14px; color:#999; text-shadow:1px 1px 0 #000; letter-spacing:2px; text-transform:uppercase; opacity:0.8;">ELIMINATED</div>
-        <div id="victim-name" style="font-size:22px; font-weight:900; color:#fff; text-shadow:0 0 8px #ff3333, 0 0 20px #aa0000, 2px 2px 0 #000; letter-spacing:2px; margin-top:3px;">PlayerName</div>
     </div>
 
     <!-- Audio Elements -->
@@ -467,131 +478,142 @@
 
     <!-- Instruction Panel -->
     <div id="instruction-panel">
-        <strong>🎮 KillStreak HUD Preview</strong>
-        <span class="badge-new">v1.5.0</span>
+        <strong>KillStreak HUD Preview</strong>
+        <span class="badge-new">v1.6.0</span>
         <br>Demo các UI elements. Click để preview:
-        <button class="demo-button" onclick="demoKillCounter()">Kill Counter (5)</button>
-        <button class="demo-button" onclick="demoStreak()">Streak (3 KILLS)</button>
-        <button class="demo-button" onclick="demoHeadshot()">Double Headshot</button>
-        <button class="demo-button" onclick="demoMultiKill()">Triple Kill</button>
+        <button class="demo-button" onclick="demoKillCounter()">Kill Counter (top-left)</button>
+        <button class="demo-button" onclick="demoStreak('KILLING SPREE', 'sk-killingspree', 3)">KILLING SPREE</button>
+        <button class="demo-button" onclick="demoStreak('RAMPAGE', 'sk-rampage', 5)">RAMPAGE</button>
+        <button class="demo-button" onclick="demoStreak('DOMINATING', 'sk-dominating', 7)">DOMINATING</button>
+        <button class="demo-button" onclick="demoStreak('UNSTOPPABLE', 'sk-unstoppable', 10)">UNSTOPPABLE</button>
+        <button class="demo-button" onclick="demoStreak('GODLIKE', 'sk-godlike', 15)">GODLIKE</button>
+        <button class="demo-button" onclick="demoHeadshot(1)">Headshot (1 icon)</button>
+        <button class="demo-button" onclick="demoHeadshot(2)">Double Headshot (2 icons)</button>
+        <button class="demo-button" onclick="demoHeadshot(3)">Triple Headshot (3 icons)</button>
+        <button class="demo-button" onclick="demoHeadshot(5)">Multi Headshot (5 icons)</button>
+        <button class="demo-button" onclick="demoMultiKill('DOUBLE KILL', 'mk-double')">Double Kill</button>
+        <button class="demo-button" onclick="demoMultiKill('TRIPLE KILL', 'mk-triple')">Triple Kill</button>
+        <button class="demo-button" onclick="demoMultiKill('QUAD KILL', 'mk-quad')">Quad Kill</button>
+        <button class="demo-button" onclick="demoMultiKill('RAMPAGE', 'mk-rampage')">Rampage (multi)</button>
         <button class="demo-button" onclick="demoFirstBlood()">First Blood</button>
         <button class="demo-button" onclick="demoRevenge()">Revenge</button>
         <button class="demo-button" onclick="demoServerAnnounce()">Server Announce</button>
-        <button class="demo-button" onclick="demoVictim()">🆕 Victim Badge</button>
-        <button class="demo-button" onclick="demoStreakEndedKiller()">🆕 Streak Ended+Killer</button>
+        <button class="demo-button" onclick="demoStreakEndedEnv()">Streak Ended (env)</button>
+        <button class="demo-button" onclick="demoStreakEndedPlayer()">Streak Ended (player)</button>
         <button class="demo-button" onclick="clearAll()">Clear All</button>
     </div>
 
     <script>
         function playSound(soundName) {
-            const audio = document.getElementById('snd-' + soundName);
+            var audio = document.getElementById('snd-' + soundName);
             if (audio) {
                 audio.currentTime = 0;
-                audio.play().catch(e => console.log('Audio play error:', e));
+                audio.play().catch(function(e) {});
             }
         }
 
         function demoKillCounter() {
             playSound('kill_normal');
-            const counter = document.getElementById('kill-counter');
-            const number = document.getElementById('kill-number');
+            var counter = document.getElementById('kill-counter');
+            var number = document.getElementById('kill-number');
             number.textContent = '5';
             counter.classList.remove('hidden');
-            setTimeout(() => counter.classList.add('hidden'), 5000);
+            setTimeout(function() { counter.classList.add('hidden'); }, 5000);
         }
 
-        function demoStreak() {
+        function demoStreak(name, cssClass, kills) {
             playSound('kill_normal');
-            setTimeout(() => playSound('streak_3'), 300);
-            const el = document.getElementById('streak-message');
-            const nameEl = document.getElementById('streak-name');
-            const killsEl = document.getElementById('streak-kills');
-            nameEl.textContent = 'KILLING SPREE';
-            killsEl.textContent = '3 KILLS';
+            setTimeout(function() { playSound('streak_' + kills); }, 300);
+            var el = document.getElementById('streak-message');
+            var nameEl = document.getElementById('streak-name');
+            var killsEl = document.getElementById('streak-kills');
+            nameEl.textContent = name;
+            killsEl.textContent = kills + ' KILLS';
+            el.className = 'hidden';
+            if (cssClass) el.classList.add(cssClass);
             el.classList.remove('hidden');
-            setTimeout(() => el.classList.add('hidden'), 3000);
+            setTimeout(function() { el.classList.add('hidden'); }, 3000);
         }
 
-        function demoHeadshot() {
+        function demoHeadshot(count) {
+            count = count || 1;
             playSound('kill_headshot');
-            setTimeout(() => playSound('headshot_double'), 300);
-            const el = document.getElementById('headshot-message');
-            const nameEl = document.getElementById('headshot-name');
-            const countEl = document.getElementById('headshot-count');
-            nameEl.textContent = 'DOUBLE HEADSHOT';
-            countEl.textContent = '2x';
-            el.classList.remove('hidden');
-            setTimeout(() => el.classList.add('hidden'), 3000);
+            var badge = document.getElementById('headshot-badge');
+            badge.innerHTML = '';
+            for (var i = 0; i < count; i++) {
+                var icon = document.createElement('div');
+                icon.className = 'headshot-icon';
+                badge.appendChild(icon);
+            }
+            badge.classList.remove('hidden');
+            setTimeout(function() { badge.classList.add('hidden'); }, 1500);
         }
 
-        function demoMultiKill() {
+        function demoMultiKill(name, cssClass) {
             playSound('kill_normal');
-            setTimeout(() => playSound('triple_kill'), 300);
-            const el = document.getElementById('multikill-badge');
-            const countEl = document.getElementById('multikill-count');
-            const nameEl = document.getElementById('multikill-name');
-            countEl.textContent = '3x';
-            nameEl.textContent = 'TRIPLE KILL';
+            setTimeout(function() { playSound('double_kill'); }, 300);
+            var el = document.getElementById('multikill-badge');
+            var nameEl = document.getElementById('multikill-name');
+            nameEl.textContent = name;
+            el.className = 'hidden';
+            el.classList.add(cssClass);
             el.classList.remove('hidden');
-            setTimeout(() => el.classList.add('hidden'), 3000);
+            setTimeout(function() { el.classList.add('hidden'); }, 3000);
         }
 
         function demoFirstBlood() {
             playSound('first_blood');
-            const el = document.getElementById('firstblood-badge');
+            var el = document.getElementById('firstblood-badge');
             el.classList.remove('hidden');
-            setTimeout(() => el.classList.add('hidden'), 3000);
+            setTimeout(function() { el.classList.add('hidden'); }, 3000);
         }
 
         function demoRevenge() {
             playSound('revenge_kill');
-            const el = document.getElementById('revenge-badge');
+            var el = document.getElementById('revenge-badge');
             el.classList.remove('hidden');
-            setTimeout(() => el.classList.add('hidden'), 3000);
+            setTimeout(function() { el.classList.add('hidden'); }, 3000);
         }
 
         function demoServerAnnounce() {
             playSound('streak_5');
-            const el = document.getElementById('server-announce');
+            var el = document.getElementById('server-announce');
             el.classList.remove('hidden');
-            setTimeout(() => el.classList.add('hidden'), 3000);
+            setTimeout(function() { el.classList.add('hidden'); }, 3000);
         }
 
-        function demoStreakEnded() {
-            const el = document.getElementById('streak-ended');
+        function demoStreakEndedEnv() {
+            var el = document.getElementById('streak-ended');
+            var textEl = document.getElementById('ended-text');
+            var countEl = document.getElementById('ended-count');
+            textEl.textContent = 'Streak Ended';
+            countEl.textContent = '15 kill streak';
+            el.className = 'hidden';
+            el.classList.add('ended-env');
             el.classList.remove('hidden');
-            setTimeout(() => el.classList.add('hidden'), 2000);
+            setTimeout(function() { el.classList.add('hidden'); }, 2000);
         }
 
-        function demoVictim() {
-            playSound('kill_normal');
-            const el = document.getElementById('victim-badge');
-            const nameEl = document.getElementById('victim-name');
-            nameEl.textContent = 'SomePlayer';
-            el.classList.remove('hidden');
-            setTimeout(() => el.classList.add('hidden'), 1200);
-        }
-
-        function demoStreakEndedKiller() {
-            const el = document.getElementById('streak-ended');
-            const textEl = document.getElementById('ended-text');
-            const countEl = document.getElementById('ended-count');
+        function demoStreakEndedPlayer() {
+            var el = document.getElementById('streak-ended');
+            var textEl = document.getElementById('ended-text');
+            var countEl = document.getElementById('ended-count');
             textEl.textContent = 'Streak Ended';
             countEl.textContent = 'by KillerName (10 kills)';
+            el.className = 'hidden';
+            el.classList.add('ended-by-player');
             el.classList.remove('hidden');
-            setTimeout(() => el.classList.add('hidden'), 2000);
+            setTimeout(function() { el.classList.add('hidden'); }, 2000);
         }
 
         function clearAll() {
-            document.querySelectorAll('audio').forEach(audio => {
+            document.querySelectorAll('audio').forEach(function(audio) {
                 audio.pause();
                 audio.currentTime = 0;
             });
-            document.querySelectorAll('[id$="-badge"], [id$="-message"], [id$="-counter"], [id$="-progress"], [id$="-announce"], [id$="-ended"]').forEach(el => {
+            document.querySelectorAll('[id$="-badge"], [id$="-message"], [id$="-counter"], [id$="-progress"], [id$="-announce"], [id$="-ended"]').forEach(function(el) {
                 el.classList.add('hidden');
             });
-            const victimBadge = document.getElementById('victim-badge');
-            if (victimBadge) victimBadge.classList.add('hidden');
         }
     </script>
 </body>

@@ -3,9 +3,9 @@
 // Audio: dùng <video> với file .webm (Gameface không hỗ trợ <audio> hay AudioContext)
 // ============================================================
 
-console.log('[KillStreak][WebUI] script.js loaded');
+// console.log('[KillStreak][WebUI] script.js loaded');
 
-// Startup test: ô màu xanh "JS:OK" góc dưới trái → JS chạy được
+/* DISABLED - JS:OK marker
 (function() {
     try {
         var jsTest = document.createElement('div');
@@ -15,11 +15,12 @@ console.log('[KillStreak][WebUI] script.js loaded');
             'background:#00aa00; color:#ffffff; font-size:28px; ' +
             'padding:8px 16px; z-index:9999; font-family:Arial,sans-serif;';
         document.body.appendChild(jsTest);
-        console.log('[KillStreak][WebUI] JS:OK marker appended');
+        // console.log('[KillStreak][WebUI] JS:OK marker appended');
     } catch (e) {
-        console.error('[KillStreak][WebUI] JS startup test threw:', e);
+        // console.error('[KillStreak][WebUI] JS startup test threw:', e);
     }
 }());
+*/
 
 // Thời gian tự động ẩn thông báo (ms)
 var STREAK_DISPLAY_MS = 3000;
@@ -32,10 +33,11 @@ var counterTimer  = null;
 var headshotTimer = null;
 
 // ----------------------------------------
-// Diagnostic log — stacked, giữ 8 dòng gần nhất
+// Diagnostic log — DISABLED (uncomment for testing)
 // ----------------------------------------
 var _diagLogLines = [];
 function showSoundMarker(text, color) {
+    /* DISABLED
     try {
         _diagLogLines.push({ text: text, color: color || '#444444' });
         if (_diagLogLines.length > 8) _diagLogLines.shift();
@@ -58,13 +60,14 @@ function showSoundMarker(text, color) {
             container.appendChild(lineEl);
         }
     } catch (e) {}
+    */
 }
 
 // ----------------------------------------
-// Marker được gọi từ client Lua qua WebUI:ExecuteJS
-// Ô màu vàng "LUA:OK" góc trên phải → client Lua chạy được
+// Marker được gọi từ client Lua qua WebUI:ExecuteJS — DISABLED
 // ----------------------------------------
 function showLuaMarker(label) {
+    /* DISABLED
     try {
         var existing = document.getElementById('lua-test-marker');
         if (existing) existing.parentNode.removeChild(existing);
@@ -75,17 +78,19 @@ function showLuaMarker(label) {
             'background:#ffcc00; color:#000000; font-size:28px; ' +
             'padding:8px 16px; z-index:9999; font-family:Arial,sans-serif;';
         document.body.appendChild(luaTest);
-        console.log('[KillStreak][WebUI] LUA marker shown:', label);
+        // console.log('[KillStreak][WebUI] LUA marker shown:', label);
     } catch (e) {
-        console.error('[KillStreak][WebUI] showLuaMarker threw:', e);
+        // console.error('[KillStreak][WebUI] showLuaMarker threw:', e);
     }
+    */
 }
 
 // ----------------------------------------
-// Đếm số NetEvent nhận được — ô tím góc dưới phải
+// Đếm số NetEvent nhận được — DISABLED (uncomment for testing)
 // ----------------------------------------
 var _netEventCount = 0;
 function showNetEventMarker(label, info) {
+    /* DISABLED
     try {
         _netEventCount++;
         var existing = document.getElementById('net-test-marker');
@@ -97,10 +102,11 @@ function showNetEventMarker(label, info) {
             'background:#aa00cc; color:#ffffff; font-size:24px; ' +
             'padding:8px 16px; z-index:9999; font-family:Arial,sans-serif;';
         document.body.appendChild(marker);
-        console.log('[KillStreak][WebUI] NetEvent marker:', label, info);
+        // console.log('[KillStreak][WebUI] NetEvent marker:', label, info);
     } catch (e) {
-        console.error('[KillStreak][WebUI] showNetEventMarker threw:', e);
+        // console.error('[KillStreak][WebUI] showNetEventMarker threw:', e);
     }
+    */
 }
 
 // ============================================================
@@ -159,7 +165,7 @@ function stopCurrentKillSound() {
 }
 
 function playKillSound(soundName) {
-    console.log('[KillStreak][WebUI] playKillSound:', soundName);
+    // console.log('[KillStreak][WebUI] playKillSound:', soundName);
 
     // Nếu là kill sound, dừng kill sound đang phát trước
     if (_killCategories.indexOf(soundName) !== -1) {
@@ -192,20 +198,20 @@ function playKillSound(soundName) {
         var result = vid.play();
         if (result && typeof result.then === 'function') {
             result.then(function() {
-                console.log('[KillStreak][WebUI] Playing:', soundName);
-                showSoundMarker('SND-PLAY ' + soundName, '#008800');
+                // console.log('[KillStreak][WebUI] Playing:', soundName);
+                // showSoundMarker('SND-PLAY ' + soundName, '#008800');
             }).catch(function(e) {
-                console.error('[KillStreak][WebUI] play() rejected:', soundName, e);
-                showSoundMarker('SND-ERR ' + soundName + ': ' + (e.message || e), '#cc0000');
+                // console.error('[KillStreak][WebUI] play() rejected:', soundName, e);
+                // showSoundMarker('SND-ERR ' + soundName + ': ' + (e.message || e), '#cc0000');
                 _isPlaying = false;
                 if (document.body.contains(vid)) document.body.removeChild(vid);
             });
         } else {
-            showSoundMarker('SND-PLAY ' + soundName, '#008800');
+            // showSoundMarker('SND-PLAY ' + soundName, '#008800');
         }
     } catch (e) {
-        console.error('[KillStreak][WebUI] playKillSound threw:', e);
-        showSoundMarker('SND-THROW ' + soundName + ': ' + e.message, '#cc0000');
+        // console.error('[KillStreak][WebUI] playKillSound threw:', e);
+        // showSoundMarker('SND-THROW ' + soundName + ': ' + e.message, '#cc0000');
         _isPlaying = false;
         if (document.body.contains(vid)) document.body.removeChild(vid);
     }
@@ -215,7 +221,7 @@ function playKillSound(soundName) {
 // Cập nhật bộ đếm kill góc trên phải
 // ----------------------------------------
 function updateKillCounter(kills) {
-    console.log('[KillStreak][WebUI] updateKillCounter:', kills);
+    // console.log('[KillStreak][WebUI] updateKillCounter:', kills);
     var counter = document.getElementById('kill-counter');
     var number  = document.getElementById('kill-number');
 
@@ -236,13 +242,24 @@ function updateKillCounter(kills) {
 // Hiển thị thông báo streak lớn
 // ----------------------------------------
 function showStreakMessage(streakName, kills) {
-    console.log('[KillStreak][WebUI] showStreakMessage:', streakName, kills);
+    // console.log('[KillStreak][WebUI] showStreakMessage:', streakName, kills);
     var el      = document.getElementById('streak-message');
     var nameEl  = document.getElementById('streak-name');
     var killsEl = document.getElementById('streak-kills');
 
     nameEl.textContent  = streakName;
     killsEl.textContent = kills + ' KILLS';
+
+    var _classMap = {
+        'KILLING SPREE': 'sk-killingspree',
+        'RAMPAGE':       'sk-rampage',
+        'DOMINATING':    'sk-dominating',
+        'UNSTOPPABLE':   'sk-unstoppable',
+        'GODLIKE':       'sk-godlike',
+    };
+    var cssClass = _classMap[streakName] || '';
+    el.className = 'hidden';
+    if (cssClass) el.classList.add(cssClass);
 
     el.classList.remove('hidden');
     el.style.animation = 'none';
@@ -263,9 +280,19 @@ function showStreakMessage(streakName, kills) {
 // Hiển thị badge headshot đơn (mỗi khi có headshot kill)
 // ----------------------------------------
 var _headshotBadgeTimer = null;
-function showHeadshotBadge() {
+function showHeadshotBadge(count) {
     var el = document.getElementById('headshot-badge');
     if (!el) return;
+
+    count = count || 1;
+    if (count > 5) count = 5;
+
+    el.innerHTML = '';
+    for (var i = 0; i < count; i++) {
+        var icon = document.createElement('div');
+        icon.className = 'headshot-icon';
+        el.appendChild(icon);
+    }
 
     el.classList.remove('hidden');
     el.style.animation = 'none';
@@ -286,7 +313,7 @@ function showHeadshotBadge() {
 // Hiển thị thông báo headshot liên tiếp
 // ----------------------------------------
 function showHeadshotMessage(name, count) {
-    console.log('[KillStreak][WebUI] showHeadshotMessage:', name, count);
+    // console.log('[KillStreak][WebUI] showHeadshotMessage:', name, count);
     var el      = document.getElementById('headshot-message');
     var nameEl  = document.getElementById('headshot-name');
     var countEl = document.getElementById('headshot-count');
@@ -330,7 +357,7 @@ function updateStreakProgress(nextName, remaining) {
 // ----------------------------------------
 var _revengeBadgeTimer = null;
 function showRevengeBadge() {
-    console.log('[KillStreak][WebUI] showRevengeBadge');
+    // console.log('[KillStreak][WebUI] showRevengeBadge');
     var el = document.getElementById('revenge-badge');
     if (!el) return;
     el.classList.remove('hidden');
@@ -370,7 +397,7 @@ function clearAllHudEvents() {
 // ----------------------------------------
 var _serverAnnounceTimer = null;
 function showServerAnnounce(killerName, streakName, kills) {
-    console.log('[KillStreak][WebUI] showServerAnnounce:', killerName, streakName, kills);
+    // console.log('[KillStreak][WebUI] showServerAnnounce:', killerName, streakName, kills);
     clearAllHudEvents();
     var el       = document.getElementById('server-announce');
     var nameEl   = document.getElementById('announce-name');
@@ -396,7 +423,7 @@ function showServerAnnounce(killerName, streakName, kills) {
 // ----------------------------------------
 var _firstBloodTimer = null;
 function showFirstBloodBadge() {
-    console.log('[KillStreak][WebUI] showFirstBloodBadge');
+    // console.log('[KillStreak][WebUI] showFirstBloodBadge');
     var el = document.getElementById('firstblood-badge');
     if (!el) return;
     el.classList.remove('hidden');
@@ -424,7 +451,7 @@ var _multiKillClassMap = {
     'RAMPAGE':     'mk-rampage',
 };
 function showMultiKillBadge(name, count) {
-    console.log('[KillStreak][WebUI] showMultiKillBadge:', name, count);
+    // console.log('[KillStreak][WebUI] showMultiKillBadge:', name, count);
     var el     = document.getElementById('multikill-badge');
     var nameEl = document.getElementById('multikill-name');
     if (!el || !nameEl) return;
@@ -454,20 +481,22 @@ function showMultiKillBadge(name, count) {
 // Hiển thị thông báo streak kết thúc (có thể có killer name)
 // ----------------------------------------
 function showStreakEnded(oldStreak, killerName) {
-    console.log('[KillStreak][WebUI] showStreakEnded:', oldStreak, killerName);
+    // console.log('[KillStreak][WebUI] showStreakEnded:', oldStreak, killerName);
     var el      = document.getElementById('streak-ended');
     var textEl  = document.getElementById('ended-text');
     var countEl = document.getElementById('ended-count');
 
+    el.className = 'hidden';
+
     if (killerName && killerName.length > 0) {
         textEl.textContent  = 'Streak Ended';
         countEl.textContent = 'by ' + killerName + ' (' + oldStreak + ' kills)';
-        showSoundMarker('STREAK ENDED: ' + killerName + ' (' + oldStreak + 'x)', '#ff6600');
+        el.classList.add('ended-by-player');
         playKillSound('shut_down');
     } else {
         textEl.textContent  = 'Streak Ended';
         countEl.textContent = oldStreak + ' kill streak';
-        showSoundMarker('STREAK ENDED (' + oldStreak + 'x)', '#666666');
+        el.classList.add('ended-env');
         playKillSound('dead');
     }
 
