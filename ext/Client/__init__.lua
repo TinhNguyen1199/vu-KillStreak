@@ -118,14 +118,8 @@ NetEvents:Subscribe('KillStreak:OnKill', function(kills, headshot, streakName, s
     if streak ~= nil then
         showStreakMessage(streak.name, currentStreak)
         if not importantStreak then
-            local timer = Timer()
-            timer:Start(0.3)
-            timer:Subscribe('Update', function(t, dt)
-                if t.time >= 0.3 then
-                    playSound(streak.sound)
-                    t:Destroy()
-                end
-            end)
+            -- Delay nhỏ để kill_normal phát trước, sau đó phát streak sound
+            WebUI:ExecuteJS(string.format("setTimeout(function(){ playKillSound('%s'); }, 300)", streak.sound))
         end
     end
 end)
