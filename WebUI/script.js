@@ -151,54 +151,9 @@ var _soundIds = {
         fail === 0 ? '#008800' : '#cc0000');
 }());
 
-// Tự động test phát âm thanh sau 2s (đủ thời gian preload)
-setTimeout(function() {
-    console.log('[KillStreak][WebUI] Auto sound test: playing kill_normal');
-    playKillSound('kill_normal');
-}, 2000);
+// (Auto sound test disabled)
 
-// ============================================================
-// Auto test toàn bộ sound sau 2 phút vào game
-// Phát tuần tự 10 sound, mỗi cái cách nhau 3 giây
-// ============================================================
-(function scheduleFullSoundTest() {
-    var _allSounds = [
-        'kill_normal',
-        'kill_headshot',
-        'headshot_double',
-        'headshot_triple',
-        'headshot_multi',
-        'streak_3',
-        'streak_5',
-        'streak_7',
-        'streak_10',
-        'streak_15'
-    ];
-    var INTERVAL_MS = 3000;   // 3 giây giữa mỗi sound
-    var START_DELAY  = 120000; // 2 phút (120 000ms)
-
-    setTimeout(function() {
-        console.log('[KillStreak][WebUI] === FULL SOUND TEST START ===');
-        showSoundMarker('=== SOUND TEST START ===', '#0055aa');
-
-        for (var i = 0; i < _allSounds.length; i++) {
-            (function(idx, name) {
-                setTimeout(function() {
-                    console.log('[KillStreak][WebUI] SoundTest [' + (idx + 1) + '/' + _allSounds.length + ']: ' + name);
-                    showSoundMarker('TEST [' + (idx + 1) + '/' + _allSounds.length + '] ' + name, '#0055aa');
-                    playKillSound(name);
-                }, idx * INTERVAL_MS);
-            })(i, _allSounds[i]);
-        }
-
-        // Thông báo kết thúc
-        setTimeout(function() {
-            console.log('[KillStreak][WebUI] === FULL SOUND TEST DONE ===');
-            showSoundMarker('=== SOUND TEST DONE ===', '#005500');
-        }, _allSounds.length * INTERVAL_MS);
-
-    }, START_DELAY);
-}());
+// (Full sound test disabled)
 
 // ============================================================
 // Sound Queue — Lua không thể gọi video.play() trực tiếp qua ExecuteJS
