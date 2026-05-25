@@ -10,9 +10,22 @@
     <!-- TEST: div này luôn hiển thị, không cần JS — nếu thấy thì WebUI render được -->
     <div id="webui-test" style="position:fixed; top:10px; left:10px; background:#ff0000; color:#ffffff; font-size:28px; padding:8px 16px; z-index:9999;">KS:OK</div>
 
+    <!-- Âm thanh: dùng <video> vì Gameface không hỗ trợ <audio> hay Web Audio API -->
+    <!-- File phải là .webm (convert từ .wav bằng ffmpeg) -->
+    <video id="snd-kill_normal"     src="sounds/kill_normal.webm"     preload="auto" style="display:none;position:absolute;"></video>
+    <video id="snd-kill_headshot"   src="sounds/kill_headshot.webm"   preload="auto" style="display:none;position:absolute;"></video>
+    <video id="snd-headshot_double" src="sounds/headshot_double.webm" preload="auto" style="display:none;position:absolute;"></video>
+    <video id="snd-headshot_triple" src="sounds/headshot_triple.webm" preload="auto" style="display:none;position:absolute;"></video>
+    <video id="snd-headshot_multi"  src="sounds/headshot_multi.webm"  preload="auto" style="display:none;position:absolute;"></video>
+    <video id="snd-streak_3"        src="sounds/streak_3.webm"        preload="auto" style="display:none;position:absolute;"></video>
+    <video id="snd-streak_5"        src="sounds/streak_5.webm"        preload="auto" style="display:none;position:absolute;"></video>
+    <video id="snd-streak_7"        src="sounds/streak_7.webm"        preload="auto" style="display:none;position:absolute;"></video>
+    <video id="snd-streak_10"       src="sounds/streak_10.webm"       preload="auto" style="display:none;position:absolute;"></video>
+    <video id="snd-streak_15"       src="sounds/streak_15.webm"       preload="auto" style="display:none;position:absolute;"></video>
+
     <!-- Hiển thị số kill streak góc trên phải -->
     <div id="kill-counter" class="hidden">
-        <span id="kill-icon">☠</span>
+        <span id="kill-icon">&#9760;</span>
         <span id="kill-number">0</span>
     </div>
 
@@ -33,8 +46,6 @@
         <div id="ended-text">Streak ended</div>
         <div id="ended-count"></div>
     </div>
-
-    <!-- Audio được load bằng Web Audio API trong script.js (Gameface không phát qua HTMLMediaElement) -->
 
     <script src="script.js"></script>
 </body>
