@@ -104,56 +104,9 @@ function showNetEventMarker(label, info) {
 }
 
 // ============================================================
-// Audio — dùng <video> element với file .webm
-// Theo tài liệu VU: https://docs.veniceunleashed.net/modding/gameface-migration/
-// Gameface KHÔNG hỗ trợ <audio> hay AudioContext — chỉ hỗ trợ <video> + WebM
+// Audio — dùng <video> element tạo động (Gameface không hỗ trợ <audio> hay AudioContext)
+// Mỗi lần play tạo <video> mới để tránh lỗi "không replay được" trên static elements
 // ============================================================
-
-// Map tên sound → id của <video> element trong HTML
-var _soundIds = {
-    'kill_normal':     'snd-kill_normal',
-    'kill_headshot':   'snd-kill_headshot',
-    'headshot_double': 'snd-headshot_double',
-    'headshot_triple': 'snd-headshot_triple',
-    'headshot_multi':  'snd-headshot_multi',
-    'streak_3':        'snd-streak_3',
-    'streak_5':        'snd-streak_5',
-    'streak_7':        'snd-streak_7',
-    'streak_10':       'snd-streak_10',
-    'streak_15':       'snd-streak_15',
-    'first_blood':     'snd-first_blood',
-    'revenge_kill':    'snd-revenge_kill',
-    'double_kill':     'snd-double_kill',
-    'triple_kill':     'snd-triple_kill',
-    'quad_kill':       'snd-quad_kill',
-    'rampage':         'snd-rampage',
-    'unstoppable':     'snd-unstoppable',
-    'shut_down':       'snd-shut_down',
-    'dead':            'snd-dead',
-};
-
-// Kiểm tra video elements load được không khi startup
-(function checkVideoElements() {
-    var ok = 0;
-    var fail = 0;
-    for (var name in _soundIds) {
-        if (!_soundIds.hasOwnProperty(name)) continue;
-        var el = document.getElementById(_soundIds[name]);
-        if (el) {
-            ok++;
-        } else {
-            fail++;
-            console.error('[KillStreak][WebUI] Missing video element for:', name);
-        }
-    }
-    console.log('[KillStreak][WebUI] Video elements: ok=' + ok + ' fail=' + fail);
-    showSoundMarker('VIDEO elements: ' + ok + ' ok, ' + fail + ' fail',
-        fail === 0 ? '#008800' : '#cc0000');
-}());
-
-// (Auto sound test disabled)
-
-// (Full sound test disabled)
 
 // ============================================================
 // Sound Queue — Lua không thể gọi video.play() trực tiếp qua ExecuteJS
@@ -162,9 +115,12 @@ var _soundIds = {
 // setInterval bên dưới drain queue từ page-level JS context.
 // ============================================================
 var _soundQueue = [];
+var _isPlaying = false;
 
 function requestSound(name) {
-    _soundQueue.push({ name: name, delay: 0 });
+    setTimeout(function() {
+        _soundQueue.push({ name: name, delay: 0 });
+    }, 0);
 }
 
 function clearSoundQueue() {
@@ -179,50 +135,61 @@ function requestSoundDelayed(name, delayMs) {
 
 setInterval(function() {
     if (_soundQueue.length === 0) return;
+    if (_isPlaying) return;
     var item = _soundQueue.shift();
     playKillSound(item.name);
 }, 50);
 
 // Kill categories — dừng âm thanh cũ trước khi phát mới
 var _killCategories = ['kill_normal', 'kill_headshot', 'headshot_double', 'headshot_triple', 'headshot_multi'];
+var _currentKillVideo = null;
 
 function stopCurrentKillSound() {
-    _killCategories.forEach(function(name) {
-        var id = _soundIds[name];
-        if (!id) return;
-        var vid = document.getElementById(id);
-        if (!vid) return;
+    _isPlaying = false;
+    if (_currentKillVideo) {
         try {
-            vid.pause();
-            vid.currentTime = 0;
+            _currentKillVideo.pause();
+            _currentKillVideo.src = '';
+            if (document.body.contains(_currentKillVideo)) {
+                document.body.removeChild(_currentKillVideo);
+            }
         } catch (e) {}
-    });
+        _currentKillVideo = null;
+    }
 }
 
 function playKillSound(soundName) {
     console.log('[KillStreak][WebUI] playKillSound:', soundName);
-
-    var id = _soundIds[soundName];
-    if (!id) {
-        showSoundMarker('SND-UNKNOWN ' + soundName, '#cc0000');
-        return;
-    }
-
-    var vid = document.getElementById(id);
-    if (!vid) {
-        showSoundMarker('SND-NOEL ' + soundName, '#cc0000');
-        return;
-    }
 
     // Nếu là kill sound, dừng kill sound đang phát trước
     if (_killCategories.indexOf(soundName) !== -1) {
         stopCurrentKillSound();
     }
 
+    // Tạo <video> element động — mỗi lần play là element mới, tránh lỗi "không replay"
+    var vid = document.createElement('video');
+    vid.src = 'sounds/' + soundName + '.webm';
+    vid.preload = 'auto';
+    vid.style.cssText = 'position:absolute; width:0; height:0; pointer-events:none;';
+    document.body.appendChild(vid);
+
+    _isPlaying = true;
+
+    // Track video hiện tại nếu là kill sound
+    if (_killCategories.indexOf(soundName) !== -1) {
+        _currentKillVideo = vid;
+    }
+
+    // Dọn dẹp sau khi play xong
+    vid.addEventListener('ended', function() {
+        _isPlaying = false;
+        if (document.body.contains(vid)) {
+            document.body.removeChild(vid);
+        }
+    });
+
     try {
-        vid.currentTime = 0;
         var result = vid.play();
-        // play() trả về Promise trong một số engine
         if (result && typeof result.then === 'function') {
             result.then(function() {
                 console.log('[KillStreak][WebUI] Playing:', soundName);
@@ -230,6 +197,8 @@ function playKillSound(soundName) {
             }).catch(function(e) {
                 console.error('[KillStreak][WebUI] play() rejected:', soundName, e);
                 showSoundMarker('SND-ERR ' + soundName + ': ' + (e.message || e), '#cc0000');
+                _isPlaying = false;
+                if (document.body.contains(vid)) document.body.removeChild(vid);
             });
         } else {
             showSoundMarker('SND-PLAY ' + soundName, '#008800');
@@ -237,6 +206,8 @@ function playKillSound(soundName) {
     } catch (e) {
         console.error('[KillStreak][WebUI] playKillSound threw:', e);
         showSoundMarker('SND-THROW ' + soundName + ': ' + e.message, '#cc0000');
+        _isPlaying = false;
+        if (document.body.contains(vid)) document.body.removeChild(vid);
     }
 }
 
@@ -446,15 +417,22 @@ function showFirstBloodBadge() {
 // Hiển thị badge multi-kill
 // ----------------------------------------
 var _multiKillTimer = null;
+var _multiKillClassMap = {
+    'DOUBLE KILL': 'mk-double',
+    'TRIPLE KILL': 'mk-triple',
+    'QUAD KILL':   'mk-quad',
+    'RAMPAGE':     'mk-rampage',
+};
 function showMultiKillBadge(name, count) {
     console.log('[KillStreak][WebUI] showMultiKillBadge:', name, count);
-    var el      = document.getElementById('multikill-badge');
-    var nameEl  = document.getElementById('multikill-name');
-    var countEl = document.getElementById('multikill-count');
-    if (!el || !nameEl || !countEl) return;
+    var el     = document.getElementById('multikill-badge');
+    var nameEl = document.getElementById('multikill-name');
+    if (!el || !nameEl) return;
 
-    nameEl.textContent  = name;
-    countEl.textContent = count + 'x';
+    el.className = 'hidden';
+    el.classList.add(_multiKillClassMap[name] || '');
+
+    nameEl.textContent = name;
 
     el.classList.remove('hidden');
     el.style.animation = 'none';

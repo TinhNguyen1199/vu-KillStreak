@@ -7,9 +7,9 @@ KillStreakConfig = {
     -- Danh sách các mốc Kill Streak
     -- kills = số kill liên tiếp, name = tên hiển thị, sound = tên file âm thanh
     streaks = {
-        { kills = 3,  name = "KILLING SPREE",  sound = "streak_3"  },
-        { kills = 5,  name = "RAMPAGE",         sound = "streak_5"  },
-        { kills = 7,  name = "DOMINATING",      sound = "streak_7"  },
+        { kills = 3,  name = "KILLING SPREE",  sound = "streak_3",  important = true },
+        { kills = 5,  name = "RAMPAGE",         sound = "streak_5",  important = true },
+        { kills = 7,  name = "DOMINATING",      sound = "streak_7",  important = true },
         { kills = 10, name = "UNSTOPPABLE",     sound = "streak_10", important = true },
         { kills = 15, name = "GODLIKE",         sound = "streak_15", important = true },
     },

@@ -279,7 +279,7 @@ body {
 }
 
 /* ----------------------------------------
-   Multi-Kill Badge — góc giữa, dưới headshot-badge
+   Multi-Kill Badge — kiểu khác nhau theo loại
 ---------------------------------------- */
 #multikill-badge {
     position: fixed;
@@ -291,26 +291,35 @@ body {
     white-space: nowrap;
 }
 
-#multikill-count {
-    display: block;
-    font-size: 20px;
-    font-weight: 900;
-    color: #ffdd00;
-    text-shadow: 0 0 10px #ffaa00, 2px 2px 0 #000;
-    letter-spacing: 2px;
-}
-
 #multikill-name {
     display: block;
-    font-size: 36px;
     font-weight: 900;
-    color: #ffffff;
-    text-shadow:
-        0 0 10px #ffcc00,
-        0 0 28px #ff8800,
-        2px 2px 0 #000;
-    letter-spacing: 4px;
+    letter-spacing: 5px;
     text-transform: uppercase;
+}
+
+.mk-double #multikill-name {
+    font-size: 38px;
+    color: #ffdd00;
+    text-shadow: 0 0 12px #ffaa00, 0 0 30px #ff8800, 2px 2px 0 #000;
+}
+
+.mk-triple #multikill-name {
+    font-size: 44px;
+    color: #ff8800;
+    text-shadow: 0 0 12px #ff6600, 0 0 35px #ff4400, 2px 2px 0 #000;
+}
+
+.mk-quad #multikill-name {
+    font-size: 50px;
+    color: #ff3300;
+    text-shadow: 0 0 15px #ff2200, 0 0 40px #cc0000, 2px 2px 0 #000;
+}
+
+.mk-rampage #multikill-name {
+    font-size: 56px;
+    color: #cc44ff;
+    text-shadow: 0 0 15px #aa00ff, 0 0 45px #6600cc, 2px 2px 0 #000;
 }
 
 @keyframes multiKillPop {
