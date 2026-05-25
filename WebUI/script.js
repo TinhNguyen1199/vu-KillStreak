@@ -191,6 +191,30 @@ setTimeout(function() {
     }, START_DELAY);
 }());
 
+// ============================================================
+// Sound Queue — Lua không thể gọi video.play() trực tiếp qua ExecuteJS
+// (Gameface block media call từ injected script context).
+// Giải pháp: Lua gọi requestSound() để đẩy vào queue,
+// setInterval bên dưới drain queue từ page-level JS context.
+// ============================================================
+var _soundQueue = [];
+
+function requestSound(name) {
+    _soundQueue.push({ name: name, delay: 0 });
+}
+
+function requestSoundDelayed(name, delayMs) {
+    setTimeout(function() {
+        _soundQueue.push({ name: name, delay: 0 });
+    }, delayMs || 0);
+}
+
+setInterval(function() {
+    if (_soundQueue.length === 0) return;
+    var item = _soundQueue.shift();
+    playKillSound(item.name);
+}, 50);
+
 // Kill categories — dừng âm thanh cũ trước khi phát mới
 var _killCategories = ['kill_normal', 'kill_headshot', 'headshot_double', 'headshot_triple', 'headshot_multi'];
 

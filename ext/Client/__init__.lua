@@ -41,8 +41,10 @@ local currentStreak = 0  -- số kill streak hiện tại của người chơi n
 -- soundName: tên file trong thư mục audio/ (không cần đuôi .wav)
 -- ----------------------------------------
 local function playSound(soundName)
-    -- Gửi lệnh sang WebUI để phát âm thanh HTML5
-    WebUI:ExecuteJS(string.format("playKillSound('%s')", soundName))
+    -- Dùng requestSound thay vì gọi playKillSound trực tiếp:
+    -- Gameface block video.play() từ injected ExecuteJS context,
+    -- requestSound() đẩy vào queue để setInterval (page-level JS) xử lý.
+    WebUI:ExecuteJS(string.format("requestSound('%s')", soundName))
 end
 
 -- ----------------------------------------
@@ -119,7 +121,7 @@ NetEvents:Subscribe('KillStreak:OnKill', function(kills, headshot, streakName, s
         showStreakMessage(streak.name, currentStreak)
         if not importantStreak then
             -- Delay nhỏ để kill_normal phát trước, sau đó phát streak sound
-            WebUI:ExecuteJS(string.format("setTimeout(function(){ playKillSound('%s'); }, 300)", streak.sound))
+            WebUI:ExecuteJS(string.format("requestSoundDelayed('%s', 300)", streak.sound))
         end
     end
 end)
