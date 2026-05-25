@@ -21,6 +21,12 @@ KillStreakConfig = {
         { count = 5, name = "MULTI HEADSHOT",  sound = "headshot_multi"  },
     },
 
+    -- Âm thanh First Blood
+    firstBloodSound = "first_blood",
+
+    -- Âm thanh Revenge
+    revengeSound = "revenge_kill",
+
     -- Âm thanh khi kill thường
     killSound = "kill_normal",
 
@@ -29,4 +35,13 @@ KillStreakConfig = {
 
     -- Thời gian hiển thị thông báo streak trên màn hình (giây)
     displayDuration = 3.0,
+
+    -- Multi-kill: giết nhiều người trong khoảng thời gian ngắn
+    multiKillWindow = 4000,  -- ms, window tính từ kill trước
+    multiKills = {
+        { count = 2, name = "DOUBLE KILL", sound = "streak_3"  },
+        { count = 3, name = "TRIPLE KILL", sound = "streak_5"  },
+        { count = 4, name = "QUAD KILL",   sound = "streak_7"  },
+        { count = 5, name = "RAMPAGE",     sound = "streak_10" },
+    },
 }

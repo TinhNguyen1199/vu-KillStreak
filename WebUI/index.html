@@ -22,11 +22,35 @@
     <video id="snd-streak_7"        src="sounds/streak_7.webm"        preload="auto" style="display:none;position:absolute;"></video>
     <video id="snd-streak_10"       src="sounds/streak_10.webm"       preload="auto" style="display:none;position:absolute;"></video>
     <video id="snd-streak_15"       src="sounds/streak_15.webm"       preload="auto" style="display:none;position:absolute;"></video>
+    <video id="snd-first_blood"    src="sounds/first_blood.webm"     preload="auto" style="display:none;position:absolute;"></video>
+    <video id="snd-revenge_kill"   src="sounds/revenge_kill.webm"   preload="auto" style="display:none;position:absolute;"></video>
 
     <!-- Hiển thị số kill streak góc trên phải -->
     <div id="kill-counter" class="hidden">
         <span id="kill-icon">&#9760;</span>
         <span id="kill-number">0</span>
+    </div>
+
+    <!-- Streak progress — bên dưới kill counter -->
+    <div id="streak-progress" class="hidden">
+        <span id="progress-text"></span>
+    </div>
+
+    <!-- Revenge badge -->
+    <div id="revenge-badge" class="hidden">
+        <span id="revenge-text">REVENGE</span>
+    </div>
+
+    <!-- Server Announce — streak của người khác -->
+    <div id="server-announce" class="hidden">
+        <div id="announce-name"></div>
+        <div id="announce-streak"></div>
+        <div id="announce-kills"></div>
+    </div>
+
+    <!-- First Blood badge -->
+    <div id="firstblood-badge" class="hidden">
+        <span id="firstblood-text">FIRST BLOOD</span>
     </div>
 
     <!-- Thông báo streak lớn ở giữa màn hình -->
@@ -35,10 +59,22 @@
         <div id="streak-kills">3 KILLS</div>
     </div>
 
+    <!-- Badge headshot đơn — hiện mỗi khi có headshot kill -->
+    <div id="headshot-badge" class="hidden">
+        <span id="headshot-badge-icon">&#x2316;</span>
+        <span id="headshot-badge-text">HEADSHOT</span>
+    </div>
+
     <!-- Thông báo headshot liên tiếp -->
     <div id="headshot-message" class="hidden">
         <div id="headshot-name">DOUBLE HEADSHOT</div>
         <div id="headshot-count">2x</div>
+    </div>
+
+    <!-- Badge multi-kill (Double Kill / Triple Kill / ...) -->
+    <div id="multikill-badge" class="hidden">
+        <span id="multikill-count">2x</span>
+        <span id="multikill-name">DOUBLE KILL</span>
     </div>
 
     <!-- Thông báo streak kết thúc -->

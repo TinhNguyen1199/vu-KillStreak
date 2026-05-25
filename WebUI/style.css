@@ -38,11 +38,142 @@ body {
 }
 
 /* ----------------------------------------
+   Streak Progress — bên dưới kill counter
+---------------------------------------- */
+#streak-progress {
+    position: fixed;
+    top: 56px;
+    right: 20px;
+    text-align: right;
+}
+
+#progress-text {
+    font-size: 13px;
+    color: #ffaa66;
+    text-shadow: 1px 1px 0 #000;
+    font-family: Arial, sans-serif;
+    font-weight: normal;
+    opacity: 0.9;
+    letter-spacing: 1px;
+}
+
+/* ----------------------------------------
+   Revenge Badge — giữa màn hình
+---------------------------------------- */
+#revenge-badge {
+    position: fixed;
+    top: 6%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    animation: revengePop 0.3s ease-out;
+    white-space: nowrap;
+}
+
+#revenge-text {
+    display: block;
+    font-size: 52px;
+    font-weight: 900;
+    color: #ff6600;
+    text-shadow:
+        0 0 12px #ff4400,
+        0 0 35px #aa2200,
+        2px 2px 0 #000;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+}
+
+@keyframes revengePop {
+    0%   { transform: translateX(-50%) scale(0.4); opacity: 0; }
+    60%  { transform: translateX(-50%) scale(1.15); opacity: 1; }
+    100% { transform: translateX(-50%) scale(1);    opacity: 1; }
+}
+
+/* ----------------------------------------
+   Server Announce — streak của người khác
+---------------------------------------- */
+#server-announce {
+    position: fixed;
+    top: 35%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+    animation: announcePop 0.3s ease-out;
+}
+
+#announce-name {
+    font-size: 28px;
+    font-weight: 900;
+    color: #66ccff;
+    text-shadow: 0 0 10px #0088ff, 2px 2px 0 #000;
+    letter-spacing: 3px;
+}
+
+#announce-streak {
+    font-size: 38px;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow:
+        0 0 10px #0088ff,
+        0 0 28px #0044aa,
+        2px 2px 0 #000;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+#announce-kills {
+    font-size: 18px;
+    color: #99ddff;
+    text-shadow: 1px 1px 0 #000;
+    margin-top: 4px;
+    letter-spacing: 2px;
+}
+
+@keyframes announcePop {
+    0%   { transform: translateX(-50%) scale(0.6); opacity: 0; }
+    65%  { transform: translateX(-50%) scale(1.05); opacity: 1; }
+    100% { transform: translateX(-50%) scale(1);    opacity: 1; }
+}
+
+/* ----------------------------------------
+   First Blood — giữa màn hình
+---------------------------------------- */
+#firstblood-badge {
+    position: fixed;
+    top: 6%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    animation: firstBloodPop 0.3s ease-out;
+    white-space: nowrap;
+}
+
+#firstblood-text {
+    display: block;
+    font-size: 52px;
+    font-weight: 900;
+    color: #ff2222;
+    text-shadow:
+        0 0 12px #ff0000,
+        0 0 35px #880000,
+        2px 2px 0 #000;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+}
+
+@keyframes firstBloodPop {
+    0%   { transform: translateX(-50%) scale(0.4); opacity: 0; }
+    60%  { transform: translateX(-50%) scale(1.15); opacity: 1; }
+    100% { transform: translateX(-50%) scale(1);    opacity: 1; }
+}
+
+/* ----------------------------------------
    Streak Message — giữa màn hình
 ---------------------------------------- */
 #streak-message {
     position: fixed;
-    top: 30%;
+    top: 6%;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
@@ -70,11 +201,50 @@ body {
 }
 
 /* ----------------------------------------
+   Headshot Badge — hiện mỗi khi có headshot kill
+---------------------------------------- */
+#headshot-badge {
+    position: fixed;
+    top: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(160, 0, 0, 0.75);
+    border: 1px solid rgba(255, 80, 80, 0.8);
+    border-radius: 4px;
+    padding: 5px 18px;
+    text-align: center;
+    animation: badgePop 0.2s ease-out;
+    white-space: nowrap;
+}
+
+#headshot-badge-icon {
+    font-size: 20px;
+    color: #ffdddd;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+#headshot-badge-text {
+    font-size: 20px;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow: 0 0 8px #ff4444, 1px 1px 0 #000;
+    letter-spacing: 3px;
+    vertical-align: middle;
+}
+
+@keyframes badgePop {
+    0%   { transform: translateX(-50%) scale(0.7); opacity: 0; }
+    60%  { transform: translateX(-50%) scale(1.05); opacity: 1; }
+    100% { transform: translateX(-50%) scale(1);    opacity: 1; }
+}
+
+/* ----------------------------------------
    Headshot Message — giữa màn hình, bên dưới streak
 ---------------------------------------- */
 #headshot-message {
     position: fixed;
-    top: 50%;
+    top: 16%;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
@@ -102,11 +272,52 @@ body {
 }
 
 /* ----------------------------------------
+   Multi-Kill Badge — góc giữa, dưới headshot-badge
+---------------------------------------- */
+#multikill-badge {
+    position: fixed;
+    top: 22%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    animation: multiKillPop 0.25s ease-out;
+    white-space: nowrap;
+}
+
+#multikill-count {
+    display: block;
+    font-size: 20px;
+    font-weight: 900;
+    color: #ffdd00;
+    text-shadow: 0 0 10px #ffaa00, 2px 2px 0 #000;
+    letter-spacing: 2px;
+}
+
+#multikill-name {
+    display: block;
+    font-size: 36px;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow:
+        0 0 10px #ffcc00,
+        0 0 28px #ff8800,
+        2px 2px 0 #000;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+@keyframes multiKillPop {
+    0%   { transform: translateX(-50%) scale(0.6); opacity: 0; }
+    65%  { transform: translateX(-50%) scale(1.1); opacity: 1; }
+    100% { transform: translateX(-50%) scale(1);   opacity: 1; }
+}
+
+/* ----------------------------------------
    Streak Ended
 ---------------------------------------- */
 #streak-ended {
     position: fixed;
-    top: 38%;
+    top: 6%;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;

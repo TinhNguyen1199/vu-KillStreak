@@ -95,6 +95,21 @@ NetEvents:Subscribe('KillStreak:OnKill', function(kills, headshot, streakName, s
     -- Cập nhật counter trên HUD
     updateKillCounter(currentStreak)
 
+    -- Streak progress: tìm mốc tiếp theo
+    local nextStreak = nil
+    for _, s in ipairs(KillStreakConfig.streaks) do
+        if s.kills > currentStreak then
+            nextStreak = s
+            break
+        end
+    end
+    if nextStreak then
+        local remaining = nextStreak.kills - currentStreak
+        WebUI:ExecuteJS(string.format("updateStreakProgress('%s', %d)", nextStreak.name, remaining))
+    else
+        WebUI:ExecuteJS("updateStreakProgress('', 0)")
+    end
+
     local importantStreak = streak ~= nil and streak.important == true
 
     -- Ưu tiên âm thanh: important streak > headshot milestone > headshot thường > kill thường
@@ -109,6 +124,11 @@ NetEvents:Subscribe('KillStreak:OnKill', function(kills, headshot, streakName, s
         playSound(KillStreakConfig.headshotSound)
     else
         playSound(KillStreakConfig.killSound)
+    end
+
+    -- Hiển thị badge headshot đơn cho mọi headshot kill
+    if headshot then
+        WebUI:ExecuteJS('showHeadshotBadge()')
     end
 
     -- Hiển thị thông báo headshot milestone nếu đạt mốc
@@ -126,6 +146,52 @@ NetEvents:Subscribe('KillStreak:OnKill', function(kills, headshot, streakName, s
     end
 end)
 
+-- Helper: escape single quotes cho JS string
+local function jsEscape(s)
+    return (s or ''):gsub("'", "\\'")
+end
+
+-- ----------------------------------------
+-- Nhận sự kiện Revenge từ server
+-- ----------------------------------------
+NetEvents:Subscribe('KillStreak:OnRevenge', function()
+    print('[KillStreak][CLIENT] OnRevenge received')
+    WebUI:ExecuteJS("showRevengeBadge()")
+    WebUI:ExecuteJS(string.format("requestSound('%s')", KillStreakConfig.revengeSound))
+end)
+
+-- ----------------------------------------
+-- Nhận Server Announce (streak của người khác)
+-- ----------------------------------------
+NetEvents:Subscribe('KillStreak:OnServerAnnounce', function(killerName, streakName, kills)
+    print(string.format('[KillStreak][CLIENT] OnServerAnnounce: %s %s (%d)',
+        killerName or '', streakName or '', kills or 0))
+    WebUI:ExecuteJS(string.format("showServerAnnounce('%s', '%s', %d)",
+        jsEscape(killerName), jsEscape(streakName), kills or 0))
+end)
+
+-- ----------------------------------------
+-- Nhận sự kiện First Blood từ server
+-- ----------------------------------------
+NetEvents:Subscribe('KillStreak:OnFirstBlood', function()
+    print('[KillStreak][CLIENT] OnFirstBlood received')
+    WebUI:ExecuteJS("showFirstBloodBadge()")
+    WebUI:ExecuteJS(string.format("requestSound('%s')", KillStreakConfig.firstBloodSound))
+end)
+
+-- ----------------------------------------
+-- Nhận sự kiện multi-kill từ server
+-- ----------------------------------------
+NetEvents:Subscribe('KillStreak:OnMultiKill', function(count, name, sound)
+    print(string.format('[KillStreak][CLIENT] OnMultiKill received | count=%d name="%s" sound="%s"',
+        count or 0, name or '', sound or ''))
+    WebUI:ExecuteJS(string.format("showMultiKillBadge('%s', %d)", name or '', count or 0))
+    if sound and sound ~= '' then
+        WebUI:ExecuteJS('stopCurrentKillSound()')
+        WebUI:ExecuteJS(string.format("requestSound('%s')", sound))
+    end
+end)
+
 -- ----------------------------------------
 -- Nhận sự kiện reset từ server
 -- ----------------------------------------
@@ -134,6 +200,7 @@ NetEvents:Subscribe('KillStreak:OnReset', function(oldStreak)
     WebUI:ExecuteJS(string.format("showNetEventMarker('RESET', 'old=%d')", oldStreak or 0))
     currentStreak = 0
     updateKillCounter(0)
+    WebUI:ExecuteJS("updateStreakProgress('', 0)")
 
     -- Nếu streak trước đó >= 3 thì hiển thị "Streak ended"
     if oldStreak >= 3 then

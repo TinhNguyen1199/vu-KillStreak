@@ -11,6 +11,9 @@ print('[KillStreak][SERVER] Mod loaded — streaks: ' .. #KillStreakConfig.strea
 
 local playerKills     = {}
 local playerHeadshots = {}
+local playerMultiKill = {}  -- id -> { count, lastKillTime }
+local firstBloodClaimed = false
+local lastKilledBy    = {}  -- playerId -> id của người vừa giết họ
 
 -- ----------------------------------------
 -- Helper
@@ -37,6 +40,14 @@ local function getHeadshotStreak(count)
     end
     return nil
 end
+
+-- ----------------------------------------
+-- Reset first blood khi load map mới
+-- ----------------------------------------
+Events:Subscribe('Level:Loaded', function()
+    firstBloodClaimed = false
+    print('[KillStreak][SERVER] Level loaded — first blood reset')
+end)
 
 -- ----------------------------------------
 -- Event chính: Player:Killed
@@ -94,7 +105,34 @@ Events:Subscribe('Player:Killed', function(victim, inflictor, position, weapon, 
     end
     local consecutiveHeadshots = playerHeadshots[kid]
 
-    -- ===== 4. Tìm milestone =====
+    -- ===== 4. Multi-kill tracking =====
+    local now = SharedUtils:GetTimeMS()
+    local mk  = playerMultiKill[kid] or { count = 0, lastKillTime = 0 }
+    local elapsed = now - mk.lastKillTime
+
+    if elapsed <= KillStreakConfig.multiKillWindow then
+        mk.count = mk.count + 1
+    else
+        mk.count = 1  -- window hết, kill này bắt đầu window mới
+    end
+    mk.lastKillTime = now
+    playerMultiKill[kid] = mk
+
+    -- Tìm multi-kill milestone (count == đúng mốc, hoặc count >= mốc cao nhất)
+    local multiKill = nil
+    local maxMK = KillStreakConfig.multiKills[#KillStreakConfig.multiKills]
+    if mk.count >= maxMK.count then
+        multiKill = maxMK  -- Rampage và cao hơn đều dùng mốc cuối
+    else
+        for _, m in ipairs(KillStreakConfig.multiKills) do
+            if mk.count == m.count then
+                multiKill = m
+                break
+            end
+        end
+    end
+
+    -- ===== 5. Tìm kill streak milestone =====
     local streak = nil
     for _, s in ipairs(KillStreakConfig.streaks) do
         if totalKills == s.kills then
@@ -104,13 +142,32 @@ Events:Subscribe('Player:Killed', function(victim, inflictor, position, weapon, 
     end
     local hsStreak = getHeadshotStreak(consecutiveHeadshots)
 
-    local streakInfo  = streak   and ('streak=' .. streak.name)        or 'no-streak'
-    local hsInfo      = hsStreak and ('hs-milestone=' .. hsStreak.name) or 'no-hs-milestone'
-    print(string.format('[KillStreak][SERVER] %s killed %s | kills=%d hs=%s consec_hs=%d | %s | %s',
-        killer.name, pname(victim), totalKills, tostring(headshot), consecutiveHeadshots,
-        streakInfo, hsInfo))
+    local streakInfo  = streak     and ('streak=' .. streak.name)        or 'no-streak'
+    local hsInfo      = hsStreak  and ('hs=' .. hsStreak.name)           or 'no-hs'
+    local mkInfo      = multiKill and ('mk=' .. multiKill.name .. '(' .. mk.count .. 'x)') or 'no-mk'
+    print(string.format('[KillStreak][SERVER] %s killed %s | kills=%d hs=%s mk=%dx elapsed=%dms | %s | %s | %s',
+        killer.name, pname(victim), totalKills, tostring(headshot), mk.count, elapsed,
+        streakInfo, hsInfo, mkInfo))
 
-    -- ===== 5. Gửi NetEvent về client của killer =====
+    -- ===== 6. Revenge =====
+    if not isBot(victim) and lastKilledBy[kid] == victim.id then
+        lastKilledBy[kid] = nil
+        print(string.format('[KillStreak][SERVER] REVENGE: %s killed %s', killer.name, pname(victim)))
+        NetEvents:SendTo('KillStreak:OnRevenge', killer)
+    end
+    -- Ghi nhận: victim vừa bị killer giết (để victim trả thù sau)
+    if not isBot(victim) then
+        lastKilledBy[victim.id] = kid
+    end
+
+    -- ===== 6. First Blood =====
+    if not firstBloodClaimed then
+        firstBloodClaimed = true
+        print(string.format('[KillStreak][SERVER] FIRST BLOOD: %s', killer.name))
+        NetEvents:SendTo('KillStreak:OnFirstBlood', killer)
+    end
+
+    -- ===== 8. Gửi NetEvent kill chính =====
     local streakName      = streak   and streak.name            or ''
     local streakSound     = streak   and streak.sound           or ''
     local streakImportant = streak   ~= nil and streak.important == true
@@ -121,8 +178,26 @@ Events:Subscribe('Player:Killed', function(victim, inflictor, position, weapon, 
         totalKills, headshot,
         streakName, streakSound, streakImportant,
         consecutiveHeadshots, hsName, hsSound)
-    print(string.format('[KillStreak][SERVER] NetEvent sent to %s | streakName="%s" hsName="%s"',
-        killer.name, streakName, hsName))
+
+    -- ===== 9. Server Announce — broadcast streak quan trọng lên tất cả =====
+    if streak ~= nil and streak.important == true then
+        local allPlayers = PlayerManager:GetPlayers()
+        for _, p in ipairs(allPlayers) do
+            if p.id ~= kid then
+                NetEvents:SendTo('KillStreak:OnServerAnnounce', p, killer.name, streak.name, totalKills)
+            end
+        end
+        print(string.format('[KillStreak][SERVER] ServerAnnounce broadcast: %s %s (%d kills)',
+            killer.name, streak.name, totalKills))
+    end
+
+    -- ===== 10. Gửi NetEvent multi-kill nếu đạt mốc =====
+    if multiKill ~= nil then
+        NetEvents:SendTo('KillStreak:OnMultiKill', killer,
+            mk.count, multiKill.name, multiKill.sound)
+        print(string.format('[KillStreak][SERVER] MultiKill sent to %s | %s (%dx)',
+            killer.name, multiKill.name, mk.count))
+    end
 end)
 
 -- ----------------------------------------
@@ -133,5 +208,7 @@ Events:Subscribe('Player:Left', function(player)
         print('[KillStreak][SERVER] ' .. player.name .. ' left — data cleared')
         playerKills[player.id]     = nil
         playerHeadshots[player.id] = nil
+        playerMultiKill[player.id] = nil
+        lastKilledBy[player.id]    = nil
     end
 end)
