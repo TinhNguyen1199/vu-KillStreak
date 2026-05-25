@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KillStreak Sounds List</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #1a1a1a;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #ff6600;
+            text-shadow: 0 0 10px #ff4400;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .category {
+            background: rgba(30, 30, 30, 0.8);
+            border-left: 4px solid #ff6600;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+
+        .category h2 {
+            color: #ffaa66;
+            margin-bottom: 15px;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .sound-item {
+            background: rgba(50, 50, 50, 0.6);
+            border: 1px solid rgba(255, 102, 0, 0.3);
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 3px;
+            display: grid;
+            grid-template-columns: 200px 1fr 150px;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .sound-name {
+            font-weight: bold;
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .sound-description {
+            color: #ccc;
+            font-size: 13px;
+        }
+
+        .sound-file {
+            color: #666;
+            font-size: 11px;
+            font-family: monospace;
+            text-align: right;
+        }
+
+        .play-btn {
+            background: #ff6600;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            grid-column: 3;
+            text-align: center;
+        }
+
+        .play-btn:hover {
+            background: #ff8800;
+        }
+
+        .stats {
+            background: rgba(0, 100, 200, 0.2);
+            border-left: 4px solid #00a0ff;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-item {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 12px;
+            border-radius: 3px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            color: #aaa;
+            font-size: 12px;
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+
+        .legend {
+            background: rgba(200, 100, 0, 0.1);
+            border: 1px solid rgba(255, 150, 0, 0.3);
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .legend h3 {
+            color: #ffaa66;
+            margin-bottom: 10px;
+        }
+
+        .legend ul {
+            margin-left: 20px;
+        }
+
+        .legend li {
+            margin-bottom: 5px;
+            color: #ccc;
+        }
+
+        .highlight {
+            background: rgba(255, 102, 0, 0.2);
+            padding: 2px 6px;
+            border-radius: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .sound-item {
+                grid-template-columns: 1fr;
+            }
+            .sound-file, .play-btn {
+                grid-column: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 KillStreak Mod — Sound Files List</h1>
+        <p class="subtitle">Danh sách đầy đủ tất cả âm thanh trong mod</p>
+
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">17</div>
+                    <div class="stat-label">Total Sounds</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Kill Streak</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Headshot</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">Special</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend">
+            <h3>📋 Hướng dẫn</h3>
+            <ul>
+                <li><strong>Sound Name:</strong> Tên được dùng trong config.lua (áp dụng trong script.js)</li>
+                <li><strong>File:</strong> Đường dẫn file .webm trong thư mục WebUI/sounds/</li>
+                <li><strong>Play button:</strong> Click để test âm thanh (nếu file tồn tại)</li>
+            </ul>
+        </div>
+
+        <!-- Kill Sounds -->
+        <div class="category">
+            <h2>🔫 Kill Sounds (cơ bản)</h2>
+            <div class="sound-item">
+                <div class="sound-name">kill_normal</div>
+                <div class="sound-description">Âm thanh phát khi giết thường (không headshot)</div>
+                <button class="play-btn" onclick="playSound('kill_normal')">Play</button>
+            </div>
+            <div class="sound-item">
+                <div class="sound-name">kill_headshot</div>
+                <div class="sound-description">Âm thanh phát khi headshot (nếu không đạt milestone)</div>
+                <button class="play-btn" onclick="playSound('kill_headshot')">Play</button>
+            </div>
+        </div>
+
+        <!-- Kill Streak -->
+        <div class="category">
+            <h2>🔥 Kill Streak (mốc 3/5/7/10/15)</h2>
+            <div class="sound-item">
+                <div class="sound-name">streak_3</div>
+                <div class="sound-description">Mốc 3 kill liên tiếp <span class="highlight">KILLING SPREE</span></div>
+                <button class="play-btn" onclick="playSound('streak_3')">Play</button>
+            </div>
+            <div class="sound-item">
+                <div class="sound-name">streak_5</div>
+                <div class="sound-description">Mốc 5 kill liên tiếp <span class="highlight">RAMPAGE</span></div>
+                <button class="play-btn" onclick="playSound('streak_5')">Play</button>
+            </div>
+            <div class="sound-item">
+                <div class="sound-name">streak_7</div>
+                <div class="sound-description">Mốc 7 kill liên tiếp <span class="highlight">DOMINATING</span></div>
+                <button class="play-btn" onclick="playSound('streak_7')">Play</button>
+            </div>
+            <div class="sound-item">
+                <div class="sound-name">streak_10</div>
+                <div class="sound-description">Mốc 10 kill liên tiếp <span class="highlight">UNSTOPPABLE</span> ⭐ Important</div>
+                <button class="play-btn" onclick="playSound('streak_10')">Play</button>
+            </div>
+            <div class="sound-item">
+                <div class="sound-name">streak_15</div>
+                <div class="sound-description">Mốc 15 kill liên tiếp <span class="highlight">GODLIKE</span> ⭐ Important</div>
+                <button class="play-btn" onclick="playSound('streak_15')">Play</button>
+            </div>
+        </div>
+
+        <!-- Headshot Streak -->
+        <div class="category">
+            <h2>💥 Headshot Streak (2/3/5 liên tiếp)</h2>
+            <div class="sound-item">
+                <div class="sound-name">headshot_double</div>
+                <div class="sound-description">2 headshot liên tiếp <span class="highlight">DOUBLE HEADSHOT</span></div>
+                <button class="play-btn" onclick="playSound('headshot_double')">Play</button>
+            </div>
+            <div class="sound-item">
+                <div class="sound-name">headshot_triple</div>
+                <div class="sound-description">3 headshot liên tiếp <span class="highlight">TRIPLE HEADSHOT</span></div>
+                <button class="play-btn" onclick="playSound('headshot_triple')">Play</button>
+            </div>
+            <div class="sound-item">
+                <div class="sound-name">headshot_multi</div>
+                <div class="sound-description">5 headshot liên tiếp <span class="highlight">MULTI HEADSHOT</span></div>
+                <button class="play-btn" onclick="playSound('headshot_multi')">Play</button>
+            </div>
+        </div>
+
+        <!-- Multi-Kill -->
+        <div class="category">
+            <h2>💫 Multi-Kill (2/3/4/5 kills trong 4s)</h2>
+            <div class="sound-item">
+                <div class="sound-name">double_kill</div>
+                <div class="sound-description">2 kill trong 4 giây <span class="highlight">DOUBLE KILL</span></div>
+                <button class="play-btn" onclick="playSound('double_kill')">Play</button>
+            </div>
+            <div class="sound-item">
+                <div class="sound-name">triple_kill</div>
+                <div class="sound-description">3 kill trong 4 giây <span class="highlight">TRIPLE KILL</span></div>
+                <button class="play-btn" onclick="playSound('triple_kill')">Play</button>
+            </div>
+            <div class="sound-item">
+                <div class="sound-name">quad_kill</div>
+                <div class="sound-description">4 kill trong 4 giây <span class="highlight">QUAD KILL</span></div>
+                <button class="play-btn" onclick="playSound('quad_kill')">Play</button>
+            </div>
+            <div class="sound-item">
+                <div class="sound-name">rampage</div>
+                <div class="sound-description">5 kill trong 4 giây <span class="highlight">RAMPAGE</span></div>
+                <button class="play-btn" onclick="playSound('rampage')">Play</button>
+            </div>
+        </div>
+
+        <!-- Special Sounds -->
+        <div class="category">
+            <h2>⭐ Special Events</h2>
+            <div class="sound-item">
+                <div class="sound-name">first_blood</div>
+                <div class="sound-description">Kill đầu tiên của trận <span class="highlight">FIRST BLOOD</span></div>
+                <button class="play-btn" onclick="playSound('first_blood')">Play</button>
+            </div>
+            <div class="sound-item">
+                <div class="sound-name">revenge_kill</div>
+                <div class="sound-description">Kill lại người vừa kill mình <span class="highlight">REVENGE</span></div>
+                <button class="play-btn" onclick="playSound('revenge_kill')">Play</button>
+            </div>
+            <div class="sound-item">
+                <div class="sound-name">unstoppable</div>
+                <div class="sound-description">Phát khi có <span class="highlight">SERVER ANNOUNCE</span> (player khác đạt streak 10+)</div>
+                <button class="play-btn" onclick="playSound('unstoppable')">Play</button>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="category" style="border-left-color: #00ff88;">
+            <h2 style="color: #00ff88;">📊 Tóm tắt tương tác</h2>
+            <div style="color: #ccc; font-size: 13px; line-height: 1.8;">
+                <p><strong>Priority phát âm thanh (từ cao đến thấp):</strong></p>
+                <ol style="margin-left: 20px;">
+                    <li><span class="highlight">Important streaks</span> (10/15 kills) — interrupt các sound khác</li>
+                    <li>Headshot milestone (double/triple/multi) — stop kill_normal trước</li>
+                    <li>Regular headshot — stop kill_normal, phát kill_headshot</li>
+                    <li>Kill normal — không interrupt</li>
+                </ol>
+                <p style="margin-top: 15px;"><strong>Delay pattern:</strong></p>
+                <ul style="margin-left: 20px;">
+                    <li>Streak sound: delay 300ms từ kill_normal (để kill_normal phát trước)</li>
+                    <li>Multi-kill sound: delay 300ms từ kill_normal</li>
+                    <li>First blood: clear queue + stop sound hiện tại, phát ngay</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Elements (hidden) -->
+    <audio id="snd-kill_normal" preload="auto" style="display:none;">
+        <source src="WebUI/sounds/kill_normal.webm" type="audio/webm">
+    </audio>
+    <audio id="snd-kill_headshot" preload="auto" style="display:none;">
+        <source src="WebUI/sounds/kill_headshot.webm" type="audio/webm">
+    </audio>
+    <audio id="snd-headshot_double" preload="auto" style="display:none;">
+        <source src="WebUI/sounds/headshot_double.webm" type="audio/webm">
+    </audio>
+    <audio id="snd-headshot_triple" preload="auto" style="display:none;">
+        <source src="WebUI/sounds/headshot_triple.webm" type="audio/webm">
+    </audio>
+    <audio id="snd-headshot_multi" preload="auto" style="display:none;">
+        <source src="WebUI/sounds/headshot_multi.webm" type="audio/webm">
+    </audio>
+    <audio id="snd-streak_3" preload="auto" style="display:none;">
+        <source src="WebUI/sounds/streak_3.webm" type="audio/webm">
+    </audio>
+    <audio id="snd-streak_5" preload="auto" style="display:none;">
+        <source src="WebUI/sounds/streak_5.webm" type="audio/webm">
+    </audio>
+    <audio id="snd-streak_7" preload="auto" style="display:none;">
+        <source src="WebUI/sounds/streak_7.webm" type="audio/webm">
+    </audio>
+    <audio id="snd-streak_10" preload="auto" style="display:none;">
+        <source src="WebUI/sounds/streak_10.webm" type="audio/webm">
+    </audio>
+    <audio id="snd-streak_15" preload="auto" style="display:none;">
+        <source src="WebUI/sounds/streak_15.webm" type="audio/webm">
+    </audio>
+    <audio id="snd-first_blood" preload="auto" style="display:none;">
+        <source src="WebUI/sounds/first_blood.webm" type="audio/webm">
+    </audio>
+    <audio id="snd-revenge_kill" preload="auto" style="display:none;">
+        <source src="WebUI/sounds/revenge_kill.webm" type="audio/webm">
+    </audio>
+    <audio id="snd-double_kill" preload="auto" style="display:none;">
+        <source src="WebUI/sounds/double_kill.webm" type="audio/webm">
+    </audio>
+    <audio id="snd-triple_kill" preload="auto" style="display:none;">
+        <source src="WebUI/sounds/triple_kill.webm" type="audio/webm">
+    </audio>
+    <audio id="snd-quad_kill" preload="auto" style="display:none;">
+        <source src="WebUI/sounds/quad_kill.webm" type="audio/webm">
+    </audio>
+    <audio id="snd-rampage" preload="auto" style="display:none;">
+        <source src="WebUI/sounds/rampage.webm" type="audio/webm">
+    </audio>
+    <audio id="snd-unstoppable" preload="auto" style="display:none;">
+        <source src="WebUI/sounds/unstoppable.webm" type="audio/webm">
+    </audio>
+
+    <script>
+        function playSound(soundName) {
+            const audio = document.getElementById('snd-' + soundName);
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play().catch(e => {
+                    console.log('Cannot play sound:', soundName, e.message);
+                    alert('⚠️ Không thể phát âm thanh: ' + soundName + '\n\nKiểm tra:\n1. File có tồn tại?\n2. Browser cho phép autoplay?');
+                });
+            } else {
+                alert('❌ Sound không tìm thấy: snd-' + soundName);
+            }
+        }
+    </script>
+</body>
+</html>

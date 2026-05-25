@@ -67,9 +67,16 @@ Events:Subscribe('Player:Killed', function(victim, inflictor, position, weapon, 
         local oldStreak = playerKills[vid] or 0
         playerKills[vid]     = 0
         playerHeadshots[vid] = 0
-        print(string.format('[KillStreak][SERVER] %s died — streak reset from %d',
-            victim.name, oldStreak))
-        NetEvents:SendTo('KillStreak:OnReset', victim, oldStreak)
+
+        -- Lấy tên killer (nếu có) để hiển thị "Kill streak ended by X"
+        local killerName = ''
+        if killer ~= nil and not isBot(killer) then
+            killerName = killer.name or ''
+        end
+
+        print(string.format('[KillStreak][SERVER] %s died — streak reset from %d (killed by %s)',
+            victim.name, oldStreak, killerName ~= '' and killerName or 'env/bot'))
+        NetEvents:SendTo('KillStreak:OnReset', victim, oldStreak, killerName)
     end
 
     -- ===== 2. Bỏ qua nếu không có killer hoặc tự sát =====
@@ -173,11 +180,13 @@ Events:Subscribe('Player:Killed', function(victim, inflictor, position, weapon, 
     local streakImportant = streak   ~= nil and streak.important == true
     local hsName          = hsStreak and hsStreak.name          or ''
     local hsSound         = hsStreak and hsStreak.sound         or ''
+    local victimName      = victim and victim.name              or ''
 
     NetEvents:SendTo('KillStreak:OnKill', killer,
         totalKills, headshot,
         streakName, streakSound, streakImportant,
-        consecutiveHeadshots, hsName, hsSound)
+        consecutiveHeadshots, hsName, hsSound,
+        victimName)
 
     -- ===== 9. Server Announce — broadcast streak quan trọng lên tất cả =====
     if streak ~= nil and streak.important == true then

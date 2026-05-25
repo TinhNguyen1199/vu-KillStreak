@@ -123,6 +123,13 @@ var _soundIds = {
     'streak_15':       'snd-streak_15',
     'first_blood':     'snd-first_blood',
     'revenge_kill':    'snd-revenge_kill',
+    'double_kill':     'snd-double_kill',
+    'triple_kill':     'snd-triple_kill',
+    'quad_kill':       'snd-quad_kill',
+    'rampage':         'snd-rampage',
+    'unstoppable':     'snd-unstoppable',
+    'shut_down':       'snd-shut_down',
+    'dead':            'snd-dead',
 };
 
 // Kiểm tra video elements load được không khi startup
@@ -203,6 +210,10 @@ var _soundQueue = [];
 
 function requestSound(name) {
     _soundQueue.push({ name: name, delay: 0 });
+}
+
+function clearSoundQueue() {
+    _soundQueue = [];
 }
 
 function requestSoundDelayed(name, delayMs) {
@@ -408,11 +419,33 @@ function showRevengeBadge() {
 }
 
 // ----------------------------------------
+// Clear tất cả HUD events đang hiển thị (dùng khi server announce xuất hiện)
+// ----------------------------------------
+function clearAllHudEvents() {
+    var ids = [
+        'revenge-badge', 'firstblood-badge', 'headshot-badge',
+        'headshot-message', 'multikill-badge', 'streak-message', 'streak-ended'
+    ];
+    for (var i = 0; i < ids.length; i++) {
+        var el = document.getElementById(ids[i]);
+        if (el) { el.classList.add('hidden'); el.style.animation = ''; }
+    }
+    clearTimeout(_revengeBadgeTimer);
+    clearTimeout(_firstBloodTimer);
+    clearTimeout(_headshotBadgeTimer);
+    clearTimeout(headshotTimer);
+    clearTimeout(_multiKillTimer);
+    clearTimeout(streakTimer);
+    clearTimeout(endedTimer);
+}
+
+// ----------------------------------------
 // Hiển thị Server Announce (streak của người khác)
 // ----------------------------------------
 var _serverAnnounceTimer = null;
 function showServerAnnounce(killerName, streakName, kills) {
     console.log('[KillStreak][WebUI] showServerAnnounce:', killerName, streakName, kills);
+    clearAllHudEvents();
     var el       = document.getElementById('server-announce');
     var nameEl   = document.getElementById('announce-name');
     var streakEl = document.getElementById('announce-streak');
@@ -483,17 +516,27 @@ function showMultiKillBadge(name, count) {
     }, STREAK_DISPLAY_MS);
 }
 
+
 // ----------------------------------------
-// Hiển thị thông báo streak kết thúc
+// Hiển thị thông báo streak kết thúc (có thể có killer name)
 // ----------------------------------------
-function showStreakEnded(oldStreak) {
-    console.log('[KillStreak][WebUI] showStreakEnded:', oldStreak);
+function showStreakEnded(oldStreak, killerName) {
+    console.log('[KillStreak][WebUI] showStreakEnded:', oldStreak, killerName);
     var el      = document.getElementById('streak-ended');
     var textEl  = document.getElementById('ended-text');
     var countEl = document.getElementById('ended-count');
 
-    textEl.textContent  = 'Streak Ended';
-    countEl.textContent = oldStreak + ' kill streak';
+    if (killerName && killerName.length > 0) {
+        textEl.textContent  = 'Streak Ended';
+        countEl.textContent = 'by ' + killerName + ' (' + oldStreak + ' kills)';
+        showSoundMarker('STREAK ENDED: ' + killerName + ' (' + oldStreak + 'x)', '#ff6600');
+        playKillSound('shut_down');
+    } else {
+        textEl.textContent  = 'Streak Ended';
+        countEl.textContent = oldStreak + ' kill streak';
+        showSoundMarker('STREAK ENDED (' + oldStreak + 'x)', '#666666');
+        playKillSound('dead');
+    }
 
     el.classList.remove('hidden');
 

@@ -71,10 +71,10 @@ end
 -- ----------------------------------------
 -- Nhận sự kiện kill từ server (nhận primitives, tái tạo objects ở client)
 -- ----------------------------------------
-NetEvents:Subscribe('KillStreak:OnKill', function(kills, headshot, streakName, streakSound, streakImportant, consecutiveHeadshots, hsName, hsSound)
-    print(string.format('[KillStreak][CLIENT] OnKill received | kills=%d headshot=%s streak="%s" consec_hs=%d hs="%s"',
+NetEvents:Subscribe('KillStreak:OnKill', function(kills, headshot, streakName, streakSound, streakImportant, consecutiveHeadshots, hsName, hsSound, victimName)
+    print(string.format('[KillStreak][CLIENT] OnKill received | kills=%d headshot=%s streak="%s" consec_hs=%d victim="%s"',
         kills or 0, tostring(headshot),
-        streakName or '', consecutiveHeadshots or 0, hsName or ''))
+        streakName or '', consecutiveHeadshots or 0, victimName or ''))
 
     -- Marker để verify NetEvent đã tới client (không phụ thuộc log)
     WebUI:ExecuteJS(string.format("showNetEventMarker('KILL', 'k=%d hs=%s')",
@@ -131,7 +131,7 @@ NetEvents:Subscribe('KillStreak:OnKill', function(kills, headshot, streakName, s
         WebUI:ExecuteJS('showHeadshotBadge()')
     end
 
-    -- Hiển thị thông báo headshot milestone nếu đạt mốc
+-- Hiển thị thông báo headshot milestone nếu đạt mốc
     if hsStreak ~= nil then
         showHeadshotMessage(hsStreak.name, consecutiveHeadshots or 0)
     end
@@ -157,7 +157,8 @@ end
 NetEvents:Subscribe('KillStreak:OnRevenge', function()
     print('[KillStreak][CLIENT] OnRevenge received')
     WebUI:ExecuteJS("showRevengeBadge()")
-    WebUI:ExecuteJS(string.format("requestSound('%s')", KillStreakConfig.revengeSound))
+    -- Delay 300ms để kill_normal phát trước rồi mới phát revenge sound
+    WebUI:ExecuteJS(string.format("requestSoundDelayed('%s', 300)", KillStreakConfig.revengeSound))
 end)
 
 -- ----------------------------------------
@@ -168,6 +169,9 @@ NetEvents:Subscribe('KillStreak:OnServerAnnounce', function(killerName, streakNa
         killerName or '', streakName or '', kills or 0))
     WebUI:ExecuteJS(string.format("showServerAnnounce('%s', '%s', %d)",
         jsEscape(killerName), jsEscape(streakName), kills or 0))
+
+    -- Phát sound unstoppable khi có server announce
+    playSound(KillStreakConfig.serverAnnounceSound)
 end)
 
 -- ----------------------------------------
@@ -176,6 +180,9 @@ end)
 NetEvents:Subscribe('KillStreak:OnFirstBlood', function()
     print('[KillStreak][CLIENT] OnFirstBlood received')
     WebUI:ExecuteJS("showFirstBloodBadge()")
+    -- Clear queue và stop sound hiện tại để first_blood override hoàn toàn kill_normal
+    WebUI:ExecuteJS("clearSoundQueue()")
+    WebUI:ExecuteJS("stopCurrentKillSound()")
     WebUI:ExecuteJS(string.format("requestSound('%s')", KillStreakConfig.firstBloodSound))
 end)
 
@@ -187,23 +194,25 @@ NetEvents:Subscribe('KillStreak:OnMultiKill', function(count, name, sound)
         count or 0, name or '', sound or ''))
     WebUI:ExecuteJS(string.format("showMultiKillBadge('%s', %d)", name or '', count or 0))
     if sound and sound ~= '' then
-        WebUI:ExecuteJS('stopCurrentKillSound()')
-        WebUI:ExecuteJS(string.format("requestSound('%s')", sound))
+        -- Delay 300ms để kill_normal phát trước rồi mới phát multi-kill sound
+        WebUI:ExecuteJS(string.format("requestSoundDelayed('%s', 300)", sound))
     end
 end)
 
 -- ----------------------------------------
 -- Nhận sự kiện reset từ server
 -- ----------------------------------------
-NetEvents:Subscribe('KillStreak:OnReset', function(oldStreak)
-    print('[KillStreak][CLIENT] OnReset received | oldStreak=' .. tostring(oldStreak))
+NetEvents:Subscribe('KillStreak:OnReset', function(oldStreak, killerName)
+    print(string.format('[KillStreak][CLIENT] OnReset received | oldStreak=%d killerName="%s"',
+        oldStreak or 0, killerName or ''))
     WebUI:ExecuteJS(string.format("showNetEventMarker('RESET', 'old=%d')", oldStreak or 0))
     currentStreak = 0
     updateKillCounter(0)
     WebUI:ExecuteJS("updateStreakProgress('', 0)")
 
-    -- Nếu streak trước đó >= 3 thì hiển thị "Streak ended"
+    -- Nếu streak trước đó >= 3 thì hiển thị "Streak ended" với tên killer
     if oldStreak >= 3 then
-        WebUI:ExecuteJS(string.format("showStreakEnded(%d)", oldStreak))
+        local killer = killerName or ''
+        WebUI:ExecuteJS(string.format("showStreakEnded(%d, '%s')", oldStreak, jsEscape(killer)))
     end
 end)

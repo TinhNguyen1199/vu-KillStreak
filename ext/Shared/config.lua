@@ -33,15 +33,24 @@ KillStreakConfig = {
     -- Âm thanh khi headshot
     headshotSound = "kill_headshot",
 
+    -- Âm thanh khi Server Announce (streak quan trọng của người khác)
+    serverAnnounceSound = "unstoppable",
+
     -- Thời gian hiển thị thông báo streak trên màn hình (giây)
     displayDuration = 3.0,
+
+    -- Enhanced Notifications settings
+    enhancedNotifications = {
+        showKillerInStreakEnded = true,  -- Hiển thị tên người kill streak
+        showStreakEndedMessage  = true,  -- Hiển thị thông báo khi streak ended >= 3
+    },
 
     -- Multi-kill: giết nhiều người trong khoảng thời gian ngắn
     multiKillWindow = 4000,  -- ms, window tính từ kill trước
     multiKills = {
-        { count = 2, name = "DOUBLE KILL", sound = "streak_3"  },
-        { count = 3, name = "TRIPLE KILL", sound = "streak_5"  },
-        { count = 4, name = "QUAD KILL",   sound = "streak_7"  },
-        { count = 5, name = "RAMPAGE",     sound = "streak_10" },
+        { count = 2, name = "DOUBLE KILL", sound = "double_kill" },
+        { count = 3, name = "TRIPLE KILL", sound = "triple_kill" },
+        { count = 4, name = "QUAD KILL",   sound = "quad_kill"   },
+        { count = 5, name = "RAMPAGE",     sound = "rampage"     },
     },
 }

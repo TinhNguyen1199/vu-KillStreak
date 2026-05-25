@@ -22,37 +22,54 @@ Mod thêm **âm thanh tùy chỉnh khi hạ gục địch** và hệ thống **K
 
 ## Tính năng
 
-- **Âm thanh kill thường** — phát khi hạ gục địch bằng đạn thường
-- **Âm thanh headshot** — phát riêng khi bắn headshot
-- **Hệ thống Kill Streak** — theo dõi số kill liên tiếp, tự động reset khi chết
-- **Thông báo HUD** — hiển thị tên streak lớn ở giữa màn hình với hiệu ứng animation
-- **Bộ đếm kill** — hiển thị số kill streak hiện tại góc trên phải
-- **Thông báo kết thúc streak** — khi bạn chết, HUD hiển thị streak đã đạt được
-- **Âm thanh streak riêng** — mỗi mốc streak có file âm thanh riêng
-- **Ưu tiên streak quan trọng** — mốc 10 và 15 kills bỏ qua headshot sound, phát streak sound ngay lập tức để không bị át
-- **Hệ thống Headshot liên tiếp** — theo dõi headshot liên tiếp, hiển thị thông báo DOUBLE / TRIPLE / MULTI HEADSHOT khi đạt mốc
-- **Chống chồng âm** — tự động dừng âm thanh kill cũ trước khi phát âm thanh mới
-- **Hoàn toàn tùy chỉnh** — chỉnh màu, font, vị trí HUD và các mốc streak qua config
+### Hệ thống Kill
+
+| Tính năng | Mô tả |
+|-----------|-------|
+| **Kill thường** | Phát âm thanh mỗi lần hạ gục địch |
+| **Headshot** | Badge + âm thanh riêng khi bắn headshot |
+| **First Blood** | Badge đỏ lớn + âm thanh khi có kill đầu tiên trong round |
+| **Revenge Kill** | Badge + âm thanh khi giết đúng người vừa giết mình |
+| **Multi-Kill** | Thông báo khi giết nhiều người trong vòng 4 giây |
+| **Kill Streak** | Theo dõi kill liên tiếp, hiển thị thông báo khi đạt mốc |
+| **Headshot Streak** | Theo dõi headshot liên tiếp, thông báo riêng khi đạt mốc |
+| **Server Announce** | Broadcast tên người chơi lên toàn server khi đạt streak 10+, hiện ở đầu màn hình và clear toàn bộ HUD events đang hiển thị |
+| **Streak Ended with Killer** | Thông báo "Streak ended by [PlayerName]" khi chết, kèm sound `shut_down`; nếu chết bởi env/bot phát sound `dead` |
 
 ### Các mốc Kill Streak mặc định
 
-| Số Kill Liên Tiếp | Tên Hiển Thị  | Ưu tiên cao |
-|:-----------------:|:-------------:|:-----------:|
-| 3                 | KILLING SPREE |             |
-| 5                 | RAMPAGE       |             |
-| 7                 | DOMINATING    |             |
-| 10                | UNSTOPPABLE   | Có          |
-| 15                | GODLIKE       | Có          |
+| Kills | Tên | Ưu tiên |
+|:-----:|-----|:-------:|
+| 3  | KILLING SPREE |    |
+| 5  | RAMPAGE       |    |
+| 7  | DOMINATING    |    |
+| 10 | UNSTOPPABLE   | Cao (override headshot sound) |
+| 15 | GODLIKE       | Cao (override headshot sound) |
+
+### Các mốc Multi-Kill mặc định (trong vòng 4 giây)
+
+| Kills | Tên |
+|:-----:|-----|
+| 2 | DOUBLE KILL |
+| 3 | TRIPLE KILL |
+| 4 | QUAD KILL   |
+| 5 | RAMPAGE     |
 
 ### Các mốc Headshot liên tiếp mặc định
 
-| Headshot Liên Tiếp | Tên Hiển Thị    |
-|:------------------:|:---------------:|
-| 2                  | DOUBLE HEADSHOT |
-| 3                  | TRIPLE HEADSHOT |
-| 5                  | MULTI HEADSHOT  |
+| Liên tiếp | Tên |
+|:---------:|-----|
+| 2 | DOUBLE HEADSHOT |
+| 3 | TRIPLE HEADSHOT |
+| 5 | MULTI HEADSHOT  |
 
-> Chuỗi headshot liên tiếp **reset về 0** ngay khi có một kill không phải headshot, hoặc khi người chơi chết.
+> Chuỗi headshot **reset về 0** ngay khi có kill không phải headshot, hoặc khi người chơi chết.
+
+### HUD
+
+- **Kill Counter** góc trên phải — hiển thị số kill streak hiện tại
+- **Streak Progress** bên dưới kill counter — cho biết cần thêm bao nhiêu kill để lên mốc tiếp theo
+- **Thông báo Streak Ended** khi chết với streak >= 3
 
 ---
 
@@ -60,13 +77,13 @@ Mod thêm **âm thanh tùy chỉnh khi hạ gục địch** và hệ thống **K
 
 | Thành phần | Yêu cầu |
 |------------|---------|
-| Game | Battlefield 3 (bản gốc, mua qua Origin / EA App) |
-| Nền tảng mod | [Venice Unleashed](https://veniceunleashed.net) (VU) |
+| Game | Battlefield 3 (mua qua Origin / EA App) |
+| Nền tảng mod | [Venice Unleashed](https://veniceunleashed.net) |
 | Hệ điều hành | Windows 10 / 11 64-bit |
-| RAM | Tối thiểu 8 GB (khuyến nghị 16 GB) |
-| File âm thanh | Định dạng `.wav` (PCM, 16-bit, 44100 Hz hoặc 48000 Hz) |
+| Build tool | `vuicc.exe` — compile WebUI thành `ui.vuic` |
+| Convert âm thanh | FFmpeg (chuyển `.mp3`/`.wav` → `.webm`) |
 
-> **Lưu ý:** Mod này chạy phía **client** (WebUI + âm thanh) và **server** (theo dõi kill). Cần cài trên cả server lẫn client để hoạt động đầy đủ.
+> Mod chạy phía **client** (WebUI + âm thanh) và **server** (theo dõi kill). Cần cài trên cả hai để hoạt động đầy đủ.
 
 ---
 
@@ -74,25 +91,11 @@ Mod thêm **âm thanh tùy chỉnh khi hạ gục địch** và hệ thống **K
 
 ### Bước 1 — Cài Venice Unleashed
 
-1. Truy cập [veniceunleashed.net](https://veniceunleashed.net) và tải VU Launcher về
-2. Đăng nhập bằng tài khoản EA của bạn
-3. Cài đặt VU theo hướng dẫn trên trang chủ
-4. Chạy thử VU một lần để nó tạo thư mục cần thiết
+1. Truy cập [veniceunleashed.net](https://veniceunleashed.net) và tải VU Launcher
+2. Đăng nhập bằng tài khoản EA
+3. Cài đặt VU và chạy thử một lần để tạo thư mục
 
-### Bước 2 — Tải mod
-
-**Cách A — Tải từ GitHub:**
-```
-git clone https://github.com/your-username/bf3-killstreak-mod.git
-```
-
-**Cách B — Tải ZIP:**
-- Nhấn nút **Code → Download ZIP** trên trang GitHub
-- Giải nén file ZIP ra
-
-### Bước 3 — Copy mod vào thư mục VU
-
-Copy toàn bộ thư mục mod vào đúng vị trí:
+### Bước 2 — Copy mod vào thư mục VU
 
 ```
 %USERPROFILE%\Documents\Mods\KillStreak\
@@ -105,28 +108,16 @@ Documents\
 └── Mods\
     └── KillStreak\
         ├── mod.json
+        ├── ui.vuic          ← file WebUI đã compile
         ├── ext\
-        │   ├── Server\
-        │   ├── Client\
-        │   └── Shared\
-        └── WebUI\
-            ├── index.html
-            ├── style.css
-            ├── script.js
-            └── sounds\
+        └── sounds_src\      ← file gốc .wav/.mp3 (không cần thiết để chạy)
 ```
 
-### Bước 4 — Thêm file âm thanh
+### Bước 3 — Bật mod trong VU Launcher
 
-Đặt các file `.wav` vào thư mục `WebUI\sounds\` (xem chi tiết tại phần [Thêm âm thanh tùy chỉnh](#thêm-âm-thanh-tùy-chỉnh)).
-
-### Bước 5 — Bật mod trong VU Launcher
-
-1. Mở **VU Launcher**
-2. Vào tab **Mods**
-3. Tìm **KillStreak** trong danh sách
-4. Bật toggle để kích hoạt
-5. Khởi động game
+1. Mở **VU Launcher** → tab **Mods**
+2. Tìm **KillStreak** → bật toggle
+3. Khởi động game
 
 ---
 
@@ -135,92 +126,118 @@ Documents\
 ```
 KillStreak/
 │
-├── mod.json                    ← Metadata của mod (tên, version, mô tả)
+├── mod.json                    ← Metadata (tên, version, mô tả)
+├── ui.vuic                     ← WebUI đã compile (build từ WebUI/ bằng vuicc.exe)
 │
 ├── ext/
-│   ├── Server/
-│   │   └── __init__.lua        ← Server: theo dõi kill, tính streak, gửi event
-│   │
-│   ├── Client/
-│   │   └── __init__.lua        ← Client: nhận event, phát âm thanh, cập nhật HUD
-│   │
-│   └── Shared/
-│       └── config.lua          ← Cấu hình chung (mốc streak, tên âm thanh)
+│   ├── Server/__init__.lua     ← Theo dõi kill, tính streak, gửi NetEvent
+│   ├── Client/__init__.lua     ← Nhận event, phát âm thanh, cập nhật HUD
+│   └── Shared/config.lua       ← Cấu hình chung (mốc streak, tên sound)
 │
-└── WebUI/
-    ├── index.html              ← Giao diện HUD (HTML)
-    ├── style.css               ← Thiết kế HUD (màu sắc, animation, vị trí)
-    ├── script.js               ← Logic âm thanh và hiển thị thông báo
-    └── sounds/                 ← Thư mục chứa file âm thanh
-        ├── kill_normal.wav     ← Âm thanh kill thường
-        ├── kill_headshot.wav   ← Âm thanh headshot
-        ├── headshot_double.wav ← Âm thanh DOUBLE HEADSHOT (2 liên tiếp)
-        ├── headshot_triple.wav ← Âm thanh TRIPLE HEADSHOT (3 liên tiếp)
-        ├── headshot_multi.wav  ← Âm thanh MULTI HEADSHOT  (5 liên tiếp)
-        ├── streak_3.wav        ← Âm thanh KILLING SPREE
-        ├── streak_5.wav        ← Âm thanh RAMPAGE
-        ├── streak_7.wav        ← Âm thanh DOMINATING
-        ├── streak_10.wav       ← Âm thanh UNSTOPPABLE
-        └── streak_15.wav       ← Âm thanh GODLIKE
+├── WebUI/                      ← Nguồn WebUI — compile bằng vuicc.exe để tạo ui.vuic
+│   ├── index.html
+│   ├── style.css
+│   ├── script.js
+│   └── sounds/                 ← Chỉ chứa file .webm
+│       ├── kill_normal.webm
+│       ├── kill_headshot.webm
+│       ├── first_blood.webm
+│       ├── revenge_kill.webm
+│       ├── headshot_double.webm
+│       ├── headshot_triple.webm
+│       ├── headshot_multi.webm
+│       ├── streak_3.webm
+│       ├── streak_5.webm
+│       ├── streak_7.webm
+│       ├── streak_10.webm
+│       └── streak_15.webm
+│
+└── sounds_src/                 ← File gốc (.wav, .mp3) để backup và convert
+    ├── kill_normal.wav
+    ├── kill_headshot.mp3
+    ├── firstblood.mp3
+    ├── revenge_kill.mp3
+    └── ...
 ```
 
 ---
 
 ## Thêm âm thanh tùy chỉnh
 
-### Định dạng hỗ trợ
+### Định dạng bắt buộc: `.webm`
 
-Venice Unleashed WebUI chạy trên Chromium, hỗ trợ các định dạng:
+Gameface (UI engine của Venice Unleashed) **không hỗ trợ** `<audio>`, `AudioContext`, hay Web Audio API. Chỉ hỗ trợ `<video>` với file `.webm` (codec Vorbis).
 
-| Định dạng | Khuyến nghị | Ghi chú |
-|-----------|:-----------:|---------|
-| `.wav`    | Có          | PCM 16-bit, 44100 Hz hoặc 48000 Hz |
-| `.mp3`    | Có          | Bitrate 128–320 kbps |
-| `.ogg`    | Có          | Chất lượng tốt, file nhỏ |
+> File `.wav` hay `.mp3` sẽ **không phát được** — phải convert sang `.webm` trước.
 
-> Khuyến nghị dùng `.wav` để tránh độ trễ khi phát.
+### Convert sang .webm bằng FFmpeg
 
-### Tên file bắt buộc
+```bash
+ffmpeg -i input.mp3 -c:a libvorbis -b:a 128k -f webm output.webm
+ffmpeg -i input.wav -c:a libvorbis -b:a 128k -f webm output.webm
+```
 
-| Tên file               | Khi nào phát |
-|------------------------|-------------|
-| `kill_normal.wav`      | Mỗi lần kill thường |
-| `kill_headshot.wav`    | Headshot đơn lẻ (hoặc mốc headshot liên tiếp chưa đạt) |
-| `headshot_double.wav`  | Headshot lần 2 liên tiếp |
-| `headshot_triple.wav`  | Headshot lần 3 liên tiếp |
-| `headshot_multi.wav`   | Headshot lần 5 liên tiếp |
-| `streak_3.wav`         | Đạt 3 kills liên tiếp |
-| `streak_5.wav`         | Đạt 5 kills liên tiếp |
-| `streak_7.wav`         | Đạt 7 kills liên tiếp |
-| `streak_10.wav`        | Đạt 10 kills liên tiếp (ưu tiên cao — át headshot sound) |
-| `streak_15.wav`        | Đạt 15 kills liên tiếp (ưu tiên cao — át headshot sound) |
+Tải FFmpeg tại: [ffmpeg.org/download.html](https://ffmpeg.org/download.html)
 
-### Nguồn âm thanh miễn phí
+### Danh sách file âm thanh
 
-Bạn có thể tải âm thanh từ các trang sau (miễn phí, không bản quyền):
+| File `.webm` | Khi nào phát |
+|--------------|-------------|
+| `kill_normal.webm`     | Mỗi lần kill thường |
+| `kill_headshot.webm`   | Headshot đơn (hoặc khi chưa đạt mốc headshot streak) |
+| `first_blood.webm`     | Kill đầu tiên trong round |
+| `revenge_kill.webm`    | Giết người vừa giết mình |
+| `headshot_double.webm` | 2 headshot liên tiếp |
+| `headshot_triple.webm` | 3 headshot liên tiếp |
+| `headshot_multi.webm`  | 5 headshot liên tiếp |
+| `streak_3.webm`        | 3 kills liên tiếp |
+| `streak_5.webm`        | 5 kills liên tiếp |
+| `streak_7.webm`        | 7 kills liên tiếp |
+| `streak_10.webm`       | 10 kills — UNSTOPPABLE (ưu tiên cao) |
+| `streak_15.webm`       | 15 kills — GODLIKE (ưu tiên cao) |
+| `unstoppable.webm`     | Server announce khi player khác đạt streak 10+ |
+| `shut_down.webm`       | Streak bị kết thúc bởi player khác |
+| `dead.webm`            | Streak kết thúc do env/bot/tự chết |
+| `double_kill.webm`     | 2 kills trong 4 giây |
+| `triple_kill.webm`     | 3 kills trong 4 giây |
+| `quad_kill.webm`       | 4 kills trong 4 giây |
+| `rampage.webm`         | 5 kills trong 4 giây |
 
-- [freesound.org](https://freesound.org) — kho âm thanh cộng đồng lớn nhất
-- [zapsplat.com](https://zapsplat.com) — âm thanh game chuyên nghiệp
-- [soundbible.com](https://soundbible.com) — đơn giản, dễ dùng
+### Thêm sound mới
 
-### Chuyển đổi định dạng
+1. Convert file sang `.webm`, đặt vào `WebUI/sounds/`
+2. Thêm `<video>` element vào `WebUI/index.html`:
+   ```html
+   <video id="snd-ten_sound" src="sounds/ten_sound.webm" preload="auto" style="display:none;position:absolute;"></video>
+   ```
+3. Thêm vào `_soundIds` trong `WebUI/script.js`:
+   ```js
+   'ten_sound': 'snd-ten_sound',
+   ```
+4. Thêm tên sound vào `config.lua` và wire vào logic phù hợp
+5. Rebuild: `vuicc.exe WebUI ui.vuic`
 
-Nếu file của bạn không phải `.wav`, dùng **Audacity** (miễn phí) để chuyển đổi:
-1. Mở Audacity → File → Import → Audio
-2. Chọn file → File → Export → Export as WAV
-3. Chọn **PCM 16-bit Signed** → Save
+### Rebuild WebUI
+
+Mỗi lần sửa file trong `WebUI/` phải rebuild:
+
+```bash
+vuicc.exe WebUI ui.vuic
+```
+
+Tải `vuicc.exe` tại: [veniceunleashed.net/files/vuicc.exe](https://veniceunleashed.net/files/vuicc.exe)
 
 ---
 
 ## Cấu hình mod
 
-Mở file `ext\Shared\config.lua` để tùy chỉnh:
+Mở `ext/Shared/config.lua`:
 
 ```lua
 KillStreakConfig = {
 
-    -- Danh sách mốc Kill Streak
-    -- important = true: streak sound được ưu tiên hoàn toàn, bỏ qua headshot sound
+    -- Mốc Kill Streak
+    -- important = true: override headshot sound, phát ngay lập tức
     streaks = {
         { kills = 3,  name = "KILLING SPREE",  sound = "streak_3"  },
         { kills = 5,  name = "RAMPAGE",         sound = "streak_5"  },
@@ -229,61 +246,31 @@ KillStreakConfig = {
         { kills = 15, name = "GODLIKE",         sound = "streak_15", important = true },
     },
 
-    -- Danh sách mốc Headshot liên tiếp
-    -- Chuỗi reset về 0 nếu kill không phải headshot, hoặc khi chết
+    -- Mốc Headshot liên tiếp
     headshotStreaks = {
         { count = 2, name = "DOUBLE HEADSHOT", sound = "headshot_double" },
         { count = 3, name = "TRIPLE HEADSHOT", sound = "headshot_triple" },
         { count = 5, name = "MULTI HEADSHOT",  sound = "headshot_multi"  },
     },
 
-    -- Tên file âm thanh (không cần đuôi .wav)
-    killSound      = "kill_normal",
-    headshotSound  = "kill_headshot",
+    -- Multi-kill (nhiều kill trong 1 khoảng thời gian)
+    multiKillWindow = 4000,  -- ms
+    multiKills = {
+        { count = 2, name = "DOUBLE KILL", sound = "streak_3"  },
+        { count = 3, name = "TRIPLE KILL", sound = "streak_5"  },
+        { count = 4, name = "QUAD KILL",   sound = "streak_7"  },
+        { count = 5, name = "RAMPAGE",     sound = "streak_10" },
+    },
 
-    -- Thời gian hiển thị thông báo streak (giây)
+    -- Âm thanh
+    killSound       = "kill_normal",
+    headshotSound   = "kill_headshot",
+    firstBloodSound = "first_blood",
+    revengeSound    = "revenge_kill",
+
+    -- Thời gian hiển thị thông báo (giây)
     displayDuration = 3.0,
 }
-```
-
-### Ví dụ tùy chỉnh
-
-**Thêm mốc Kill Streak mới (20 kills):**
-```lua
-{ kills = 20, name = "BEYOND GODLIKE", sound = "streak_20", important = true },
-```
-Sau đó thêm file `WebUI\sounds\streak_20.wav`, thêm thẻ `<audio>` vào `WebUI\index.html`:
-```html
-<audio id="snd-streak-20" src="sounds/streak_20.wav" preload="auto"></audio>
-```
-Và thêm vào bảng `map` trong `WebUI\script.js`:
-```js
-'streak_20': 'snd-streak-20',
-```
-
-**Thêm mốc Headshot liên tiếp mới (4 lần):**
-```lua
-{ count = 4, name = "QUAD HEADSHOT", sound = "headshot_quad" },
-```
-Sau đó thêm file `WebUI\sounds\headshot_quad.wav`, thêm thẻ `<audio>` vào `WebUI\index.html`:
-```html
-<audio id="snd-headshot-quad" src="sounds/headshot_quad.wav" preload="auto"></audio>
-```
-Thêm vào `_killSoundIds` trong `WebUI\script.js` (để hàm `stopCurrentKillSound` có thể dừng nó):
-```js
-var _killSoundIds = [
-    ...,
-    'snd-headshot-quad',
-];
-```
-Và thêm vào bảng `map`:
-```js
-'headshot_quad': 'snd-headshot-quad',
-```
-
-**Đổi tên hiển thị:**
-```lua
-{ kills = 5, name = "SIÊU NHÂN", sound = "streak_5" },
 ```
 
 ---
@@ -294,123 +281,96 @@ Và thêm vào bảng `map`:
 [Người chơi kill địch]
         │
         ▼
-[Server: Player:Kill event]
-  - Tăng kill counter
-  - Kiểm tra kill streak mốc
+[Server: Player:Killed event]
+  - Kiểm tra First Blood (kill đầu tiên trong round)
+  - Kiểm tra Revenge Kill (nạn nhân = người vừa giết mình)
+  - Tăng kill streak counter
+  - Kiểm tra streak milestone (3/5/7/10/15)
   - Tăng/reset consecutive headshot counter
-  - Kiểm tra headshot streak mốc
+  - Kiểm tra headshot streak milestone
+  - Tăng multi-kill counter (reset nếu > 4 giây từ kill trước)
+  - Kiểm tra multi-kill milestone (2/3/4/5)
         │
-        ▼
-[Server → Client: NetEvents:SendTo]
-  Gửi: (tổng kills, headshot?, killStreak?, consecutiveHeadshots, hsStreak?)
-        │
-        ▼
-[Client: nhận event — ưu tiên âm thanh]
-  1. important streak  → stop sound cũ, phát streak sound ngay
-  2. headshot milestone → stop sound cũ, phát milestone sound ngay
-  3. headshot thường   → stop sound cũ, phát headshot sound
-  4. kill thường       → phát kill sound
-  (streak không quan trọng: delay 0.3s rồi phát thêm streak sound)
-        │
-        ▼
-[WebUI (JavaScript)]
-  - stopCurrentKillSound() — dừng kill-category sound đang phát
-  - Phát âm thanh .wav mới
-  - Hiển thị thông báo kill streak (nếu có)
-  - Hiển thị thông báo headshot milestone (nếu có)
-  - Chạy animation
+        ├─→ NetEvents:SendTo OnKill → killer
+        ├─→ NetEvents:SendTo OnFirstBlood → killer (nếu first blood)
+        ├─→ NetEvents:SendTo OnRevenge → killer (nếu revenge)
+        ├─→ NetEvents:SendTo OnMultiKill → killer (nếu đạt mốc)
+        └─→ NetEvents:SendTo OnServerAnnounce → tất cả player khác (nếu streak important)
 
-[Người chơi chết]
-  → Server reset kill counter VÀ headshot counter về 0
-  → Client ẩn counter, hiện "Streak Ended"
+[Client: nhận OnKill — ưu tiên âm thanh]
+  1. important streak (10/15) → stop queue, phát streak sound ngay
+  2. headshot milestone       → stop, phát milestone sound
+  3. headshot thường          → stop, phát headshot sound
+  4. kill thường              → phát kill_normal
+  (streak 3/5/7: delay 300ms rồi phát thêm streak sound)
+
+[Client: nhận OnFirstBlood]
+  → Clear queue + stop → phát first_blood sound (override kill_normal)
+
+[Client: nhận OnRevenge / OnMultiKill]
+  → requestSoundDelayed(300ms) → kill_normal phát trước, 300ms sau phát revenge/multi sound
+
+[WebUI (JavaScript) — Sound Queue Pattern]
+  Lua không thể gọi video.play() trực tiếp (Gameface block media API từ injected context)
+  Giải pháp: Lua gọi requestSound() → đẩy vào _soundQueue
+             setInterval (50ms) drain queue → gọi video.play() từ page-level context
 ```
+
+### Ưu tiên âm thanh
+
+```
+important streak > headshot milestone > headshot thường > kill thường
+```
+
+Multi-kill, First Blood, Revenge sử dụng delay 300ms để kill_normal được nghe trước.
 
 ---
 
 ## Tùy chỉnh giao diện HUD
 
-Mở file `WebUI\style.css` để chỉnh giao diện.
+> **Lưu ý Gameface**: Không hỗ trợ `display: inline`, `display: inline-block`, CSS Grid, hay table layout. Dùng `display: block` hoặc `display: flex`.
 
-### Đổi màu chữ Kill Counter
+### Vị trí các element HUD
 
+| Element | Vị trí mặc định |
+|---------|----------------|
+| `#kill-counter` | Top-right: `top: 20px; right: 20px` |
+| `#streak-progress` | Dưới kill counter: `top: 56px; right: 20px` |
+| `#firstblood-badge` | Giữa màn hình: `top: 6%` |
+| `#streak-message` | Giữa màn hình: `top: 6%` |
+| `#headshot-badge` | Giữa màn hình: `top: 12%` |
+| `#headshot-message` | Giữa màn hình: `top: 16%` |
+| `#multikill-badge` | Giữa màn hình: `top: 22%` |
+| `#revenge-badge` | Giữa màn hình: `top: 6%` |
+| `#server-announce` | Đầu màn hình: `top: 6%` |
+
+### Ví dụ tùy chỉnh
+
+**Đổi màu Kill Counter:**
 ```css
-#kill-counter {
-    color: #ff6600;  /* ← đổi màu tại đây, ví dụ: #00ff88 = xanh lá */
-}
+#kill-counter { color: #00ff88; }
 ```
 
-### Đổi vị trí Kill Counter
-
+**Đổi kích thước chữ Streak:**
 ```css
-#kill-counter {
-    top: 20px;    /* khoảng cách từ trên */
-    right: 20px;  /* khoảng cách từ phải */
-    /* left: 20px; ← dùng nếu muốn đặt bên trái */
-}
+#streak-name { font-size: 60px; }
 ```
 
-### Đổi kích thước chữ Streak
-
-```css
-#streak-name {
-    font-size: 48px;  /* ← tăng/giảm tại đây */
-}
-```
-
-### Đổi vị trí thông báo Streak
-
-```css
-#streak-message {
-    top: 30%;  /* ← 30% từ trên màn hình, đổi thành 20% để lên cao hơn */
-}
-```
-
-### Tùy chỉnh thông báo Headshot liên tiếp
-
-Thông báo headshot hiển thị ở `top: 50%` (bên dưới streak message) với tông màu xanh cyan để phân biệt.
-
-**Đổi màu chữ:**
-```css
-#headshot-name {
-    text-shadow:
-        0 0 10px #00ccff,   /* ← đổi màu glow */
-        0 0 28px #0066ff,
-        2px 2px 0 #000;
-}
-
-#headshot-count {
-    color: #66eeff;  /* ← đổi màu số đếm */
-}
-```
-
-**Đổi vị trí:**
-```css
-#headshot-message {
-    top: 50%;  /* ← đổi để tránh chồng với streak message ở top: 30% */
-}
-```
-
-**Đổi kích thước:**
-```css
-#headshot-name {
-    font-size: 36px;  /* ← nhỏ hơn streak-name (48px) để phân cấp rõ */
-}
-```
+**Tắt Server Announce:**
+Xóa hoặc comment `NetEvents:Subscribe('KillStreak:OnServerAnnounce', ...)` trong `ext/Client/__init__.lua`.
 
 ---
 
 ## Chạy trên server
 
-Để mod hoạt động trên server công cộng:
-
 1. Copy thư mục `KillStreak` vào thư mục `Mods` của server VU
-2. Trong file cấu hình server (`startup.txt` hoặc RCON), bật mod:
+2. Trong file cấu hình server, bật mod:
    ```
    vars.modList KillStreak
    ```
-3. Người chơi kết nối vào server sẽ tự động tải phần WebUI về máy
+3. Client kết nối vào sẽ tự tải `ui.vuic` về máy
 
-> **Lưu ý:** File âm thanh (`.wav`) được tải từ server về máy client khi kết nối. Kích thước file âm thanh nên giữ dưới **500 KB** mỗi file để giảm thời gian tải.
+> File `ui.vuic` bao gồm toàn bộ WebUI (HTML/CSS/JS + sounds `.webm`). Giữ kích thước mỗi file `.webm` dưới **500 KB** để giảm thời gian load.
 
 ---
 
@@ -420,72 +380,92 @@ Thông báo headshot hiển thị ở `top: 50%` (bên dưới streak message) v
 
 | Nguyên nhân | Giải pháp |
 |-------------|-----------|
-| File `.wav` đặt sai thư mục | Kiểm tra lại `WebUI\sounds\` |
-| Tên file không khớp | Đảm bảo tên đúng như bảng ở trên |
-| Định dạng file không hỗ trợ | Chuyển sang PCM 16-bit WAV bằng Audacity |
-| WebUI bị tắt trong VU | Vào VU settings, bật WebUI |
+| File không phải `.webm` | Convert bằng FFmpeg: `ffmpeg -i input.wav -c:a libvorbis -b:a 128k output.webm` |
+| File `.webm` chưa có trong `ui.vuic` | Rebuild: `vuicc.exe WebUI ui.vuic` |
+| Tên file không khớp `_soundIds` | Kiểm tra mapping trong `script.js` |
+| `<video>` element thiếu trong HTML | Kiểm tra `index.html` |
 
-### HUD không hiển thị
+### HUD không hiển thị / element bị ẩn
 
 | Nguyên nhân | Giải pháp |
 |-------------|-----------|
-| Mod chưa được bật | Kiểm tra tab Mods trong VU Launcher |
-| Lỗi JavaScript | Mở VU console (phím `~`), tìm dòng lỗi màu đỏ |
-| File `index.html` thiếu | Kiểm tra thư mục `WebUI\` |
+| Dùng `display: inline` / `inline-block` | Đổi sang `display: block` hoặc `flex` |
+| Dùng `<span>` không có CSS | Đổi sang `<div>` hoặc thêm `display: block` vào CSS |
+| Emoji Unicode không có trong font | Thay bằng ký tự ASCII hoặc text thường |
+| `ui.vuic` chưa rebuild | Chạy lại `vuicc.exe WebUI ui.vuic` |
 
 ### Streak không reset khi chết
 
-- Kiểm tra kết nối đến server (mod cần server-side script chạy)
-- Xem log server VU có dòng `[KillStreak]` không — nếu không có nghĩa server chưa load mod
+- Kiểm tra server có load mod không — xem log có dòng `[KillStreak][SERVER]` không
+- Kiểm tra event `Player:Killed` có fire không
 
-### Xem log để debug
+### Debug WebUI
 
-Trong VU console (phím `~`):
-```
--- Xem log server
-rcon.say "log"
-```
-
-Log server sẽ in các dòng như:
-```
-[KillStreak] PlayerName kills: 1 | hs streak: 1
-[KillStreak] PlayerName kills: 2 | hs streak: 2
-[KillStreak] PlayerName kills: 3 | hs streak: 0
-[KillStreak] PlayerName died. Streak reset from 3
-```
-
-Cột `hs streak` cho thấy chuỗi headshot liên tiếp hiện tại. Giá trị `0` nghĩa là kill vừa rồi không phải headshot và chuỗi đã bị reset.
+Khởi động VU client với flag `-dwebui`, sau đó mở Chrome tại `http://localhost:8884` để dùng DevTools.
 
 ---
 
 ## Changelog
 
-### v1.1.0 (2026-05-21)
-- Thêm hệ thống **Headshot liên tiếp**: theo dõi chuỗi headshot, thông báo DOUBLE / TRIPLE / MULTI HEADSHOT
-- Thêm **ưu tiên streak quan trọng**: mốc 10 và 15 kills bỏ qua headshot sound, phát streak sound ngay
-- Thêm **chống chồng âm**: `stopCurrentKillSound()` dừng kill-category sound cũ trước khi phát sound mới
-- Thêm CSS và DOM element riêng cho headshot milestone message (tông xanh cyan, vị trí `top: 50%`)
-- Cần thêm 3 file âm thanh mới: `headshot_double.wav`, `headshot_triple.wav`, `headshot_multi.wav`
+### v1.6.0 (2026-05-25)
+- **Xóa Victim Badge** — bỏ tính năng hiển thị tên người bị kill
+- **Streak Ended Sound**: bị kill bởi player → phát `shut_down.webm`; chết bởi env/bot → phát `dead.webm`
+- **Server Announce** chuyển lên `top: 6%` (đầu màn hình)
+- **Server Announce** clear toàn bộ HUD events đang hiển thị khi trigger
+- Convert `shut-down.mp3` và `dead.mp3` → `.webm`
+
+### v1.5.0 (2026-05-25)
+- **Victim Badge**: Hiển thị tên người bị kill dạng "ELIMINATED [PlayerName]"
+- **Killer Name in Streak Ended**: Thông báo "Streak ended by [PlayerName]" thay vì chỉ số lượng kill
+- **Server Announce Sound**: Phát `unstoppable.webm` khi nhận server announcement (streak 10+ của người khác)
+- Gửi `victimName` và `killerName` qua NetEvents
+- Thêm config option `serverAnnounceSound` (mặc định: "unstoppable")
+- Convert `unstoppable.mp3` → `unstoppable.webm` từ sounds_src
+- Cập nhật client listeners để nhận expanded event payloads
+
+### v1.4.0 (2026-05-25)
+- Fix **display bug**: tất cả `<span>` chuyển sang `<div>` + `display: flex/block` — Gameface không hỗ trợ `display: inline`
+- Fix **normal kill sound không nghe được** khi có multi-kill/first blood/revenge cùng lúc:
+  - Multi-kill và Revenge dùng `requestSoundDelayed(300ms)` thay vì phát ngay
+  - First Blood clear sound queue trước khi phát để override hoàn toàn
+- Thêm hàm `clearSoundQueue()` vào JS
+
+### v1.3.0 (2026-05-25)
+- Thêm **Revenge Kill** — badge + âm thanh khi giết người vừa giết mình
+- Thêm **Server Announce** — broadcast tên player lên toàn server khi đạt streak important
+- Thêm âm thanh `revenge_kill.webm`
+
+### v1.2.0 (2026-05-25)
+- Thêm **First Blood** — badge đỏ lớn + âm thanh cho kill đầu tiên mỗi round
+- Thêm **Kill Streak Progress** — hiển thị "X kills → [mốc tiếp theo]" dưới kill counter
+- Thêm âm thanh `first_blood.webm`
+
+### v1.1.0 (2026-05-25)
+- Thêm **Multi-Kill system**: Double / Triple / Quad Kill / Rampage (window 4 giây)
+- Thêm **Headshot Badge** — badge nhỏ hiện mỗi khi có headshot kill
+- Chuyển toàn bộ audio sang `.webm` + `<video>` element (Gameface không hỗ trợ `<audio>`)
+- Thêm Sound Queue Pattern: Lua gọi `requestSound()` → JS `setInterval` drain queue → `video.play()` (fix Gameface block media API từ injected context)
+- Tất cả text HUD chuyển lên `top: 6–22%` (trước ở giữa màn hình)
+- File nguồn `.wav`/`.mp3` chuyển vào `sounds_src/`, chỉ `.webm` trong `WebUI/sounds/`
 
 ### v1.0.0 (2026-05-20)
 - Phát hành lần đầu
-- Hệ thống Kill Streak với 5 mốc (3 / 5 / 7 / 10 / 15 kills)
-- Âm thanh kill thường và headshot
-- HUD counter góc trên phải
-- Thông báo streak lớn với animation
-- Thông báo "Streak Ended" khi chết
+- Kill Streak 5 mốc (3/5/7/10/15)
+- Headshot Streak (2/3/5 liên tiếp)
+- Kill Counter HUD
+- Streak message + Streak Ended animation
 
 ---
 
 ## Giấy phép
 
-Dự án này được phát hành theo giấy phép **MIT License** — bạn được tự do sử dụng, chỉnh sửa và phân phối lại với điều kiện giữ nguyên thông tin tác giả.
+MIT License — tự do sử dụng, chỉnh sửa và phân phối với điều kiện giữ nguyên thông tin tác giả.
 
 ---
 
 ## Liên hệ & đóng góp
 
-- Báo lỗi: mở **Issue** trên trang GitHub
-- Đóng góp code: fork repo và tạo **Pull Request**
-- Tài liệu Venice Unleashed: [docs.veniceunleashed.net](https://docs.veniceunleashed.net)
+- Báo lỗi: mở **Issue** trên GitHub
+- Đóng góp: fork repo và tạo **Pull Request**
+- Tài liệu VU: [docs.veniceunleashed.net](https://docs.veniceunleashed.net)
 - Cộng đồng VU: [Discord Venice Unleashed](https://discord.gg/venice-unleashed)
