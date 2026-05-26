@@ -146,6 +146,38 @@ setInterval(function() {
     playKillSound(item.name);
 }, 50);
 
+// ============================================================
+// Priority Queue — dành riêng cho adrenaline, không bị block bởi âm thanh khác
+// ============================================================
+var _adrQueue = [];
+var _adrPlaying = false;
+
+function requestAdrenalineSound() {
+    _adrQueue.push({ name: 'adrenaline' });
+}
+
+function clearAdrenalineQueue() {
+    _adrQueue = [];
+}
+
+setInterval(function() {
+    if (_adrQueue.length === 0 || _adrPlaying) return;
+    _adrPlaying = true;
+    var item = _adrQueue.shift();
+    var vid = document.createElement('video');
+    vid.src = 'sounds/' + item.name + '.webm';
+    vid.preload = 'auto';
+    vid.style.cssText = 'position:absolute; width:0; height:0; pointer-events:none;';
+    document.body.appendChild(vid);
+    vid.play();
+    vid.addEventListener('ended', function() {
+        _adrPlaying = false;
+        if (document.body.contains(vid)) {
+            document.body.removeChild(vid);
+        }
+    });
+}, 50);
+
 // Kill categories — dừng âm thanh cũ trước khi phát mới
 var _killCategories = ['kill_normal', 'kill_headshot', 'headshot_double', 'headshot_triple', 'headshot_multi'];
 var _currentKillVideo = null;
@@ -345,7 +377,7 @@ function updateStreakProgress(nextName, remaining) {
         return;
     }
     var label = remaining === 1 ? '1 kill' : remaining + ' kills';
-    textEl.textContent = label + ' → ' + nextName;
+    textEl.textContent = label + ' > ' + nextName;
     el.classList.remove('hidden');
 }
 
@@ -434,38 +466,6 @@ function showFirstBloodBadge() {
     }, 2700);
 }
 
-// ----------------------------------------
-// Hiển thị badge multi-kill
-// ----------------------------------------
-var _multiKillTimer = null;
-var _multiKillClassMap = {
-    'DOUBLE KILL': 'mk-double',
-    'TRIPLE KILL': 'mk-triple',
-    'QUAD KILL':   'mk-quad',
-    'RAMPAGE':     'mk-rampage',
-};
-function showMultiKillBadge(name, count) {
-    // console.log('[KillStreak][WebUI] showMultiKillBadge:', name, count);
-    var el     = document.getElementById('multikill-badge');
-    var nameEl = document.getElementById('multikill-name');
-    if (!el || !nameEl) return;
-
-    el.className = 'hidden';
-    el.classList.add(_multiKillClassMap[name] || '');
-
-    nameEl.textContent = name;
-
-    el.classList.remove('hidden');
-    el.style.animation = 'none';
-    el.offsetHeight;
-    el.style.animation = '';
-
-    clearTimeout(_multiKillTimer);
-    _multiKillTimer = setTimeout(function() {
-        el.classList.add('hidden');
-        el.style.animation = '';
-    }, 2700);
-}
 
 
 // ----------------------------------------
@@ -504,31 +504,111 @@ function showStreakEnded(oldStreak, killerName) {
 }
 
 // ============================================================
-// Adrenaline Mode — viền đỏ pulse + countdown
+// Adrenaline Mode — canvas-based enhanced fullscreen overlay
 // ============================================================
-var _adrenalineInterval = null;
+var _adrAnimId = null;
+var _adrStartTime = 0;
+var _adrDuration = 10000;
 
 window.showAdrenaline = function(durationMs) {
-    var overlay = document.getElementById('adrenaline-overlay');
-    if (!overlay) return;
+    var canvas = document.getElementById('adrenaline-overlay');
+    if (!canvas) return;
 
-    overlay.classList.remove('hidden');
-    overlay.classList.add('active');
+    _adrDuration = durationMs || 10000;
+    _adrStartTime = performance.now();
 
-    if (_adrenalineInterval) clearInterval(_adrenalineInterval);
-    _adrenalineInterval = setTimeout(function() {
-        _adrenalineInterval = null;
-        window.hideAdrenaline();
-    }, durationMs || 10000);
+    var dpr = window.devicePixelRatio || 1;
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+
+    var ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+
+    if (_adrAnimId) {
+        cancelAnimationFrame(_adrAnimId);
+        _adrAnimId = null;
+    }
+
+    function draw() {
+        var now = performance.now();
+        var elapsed = now - _adrStartTime;
+        var progress = Math.min(elapsed / _adrDuration, 1);
+
+        var t = (now % 800) / 800;
+        var beat;
+        if (t < 0.12) {
+            beat = 0.6 + 0.4 * Math.sin(t / 0.12 * Math.PI);
+        } else if (t < 0.3) {
+            beat = 0.4 + 0.6 * Math.sin((t - 0.12) / 0.18 * Math.PI);
+        } else {
+            beat = 0.4;
+        }
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Layer 1: Vignette
+        var vigR = Math.max(w, h) * 0.65;
+        var grad = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, vigR);
+        grad.addColorStop(0, 'rgba(0,0,0,0)');
+        grad.addColorStop(0.5, 'rgba(180,0,0,0)');
+        grad.addColorStop(1, 'rgba(180,0,0,' + (0.18 * beat) + ')');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+
+        // Layer 2: Inner glow
+        ctx.save();
+        ctx.shadowColor = 'rgba(220,30,30,' + (0.2 * beat) + ')';
+        ctx.shadowBlur = 80;
+        ctx.fillStyle = 'rgba(0,0,0,0)';
+        ctx.fillRect(0, 0, w, h);
+        ctx.restore();
+
+        // Layer 3: Pulsing border bars
+        var bw = Math.max(3, Math.round(w * 0.004));
+        var br = Math.round(180 + 75 * beat);
+        var bg = Math.round(15 + 40 * beat);
+        var bb = Math.round(15 + 40 * beat);
+        var ba = 0.3 + 0.7 * beat;
+
+        ctx.shadowColor = 'rgba(0,0,0,0)';
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = 'rgba(' + br + ',' + bg + ',' + bb + ',' + ba + ')';
+        ctx.fillRect(0, 0, w, bw);
+        ctx.fillRect(0, h - bw, w, bw);
+        ctx.fillRect(0, 0, bw, h);
+        ctx.fillRect(w - bw, 0, bw, h);
+
+        // Layer 4: Inner edge highlight
+        ctx.strokeStyle = 'rgba(255,80,80,' + (0.12 * beat) + ')';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(bw, bw, w - bw * 2, h - bw * 2);
+
+        if (progress >= 1) {
+            _adrAnimId = null;
+            window.hideAdrenaline();
+            return;
+        }
+
+        _adrAnimId = requestAnimationFrame(draw);
+    }
+
+    draw();
 };
 
 window.hideAdrenaline = function() {
-    var overlay = document.getElementById('adrenaline-overlay');
-    if (!overlay) return;
-    overlay.classList.add('hidden');
-    overlay.classList.remove('active');
-    if (_adrenalineInterval) {
-        clearInterval(_adrenalineInterval);
-        _adrenalineInterval = null;
+    if (_adrAnimId) {
+        cancelAnimationFrame(_adrAnimId);
+        _adrAnimId = null;
+    }
+    var canvas = document.getElementById('adrenaline-overlay');
+    if (canvas) {
+        var dpr = window.devicePixelRatio || 1;
+        var ctx = canvas.getContext('2d');
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
     }
 };

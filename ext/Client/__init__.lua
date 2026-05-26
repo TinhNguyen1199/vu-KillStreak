@@ -192,6 +192,7 @@ end)
 -- Nhận sự kiện multi-kill từ server
 -- ----------------------------------------
 NetEvents:Subscribe('KillStreak:OnMultiKill', function(count, name, sound)
+    if not KillStreakConfig.multiKillEnabled then return end
     print(string.format('[KillStreak][CLIENT] OnMultiKill received | count=%d name="%s" sound="%s"',
         count or 0, name or '', sound or ''))
     WebUI:ExecuteJS(string.format("showMultiKillBadge('%s', %d)", name or '', count or 0))
@@ -207,7 +208,7 @@ end)
 NetEvents:Subscribe('KillStreak:OnAdrenaline', function(durationMs)
     print(string.format('[KillStreak][CLIENT] Adrenaline activated | duration=%d', durationMs or 0))
     WebUI:ExecuteJS(string.format('showAdrenaline(%d)', durationMs or 10000))
-    playSound(KillStreakConfig.adrenaline.sound)
+    WebUI:ExecuteJS('requestAdrenalineSound()')
 end)
 
 NetEvents:Subscribe('KillStreak:OnAdrenalineEnded', function()

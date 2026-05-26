@@ -46,6 +46,7 @@ KillStreakConfig = {
     },
 
     -- Multi-kill: giết nhiều người trong khoảng thời gian ngắn
+    multiKillEnabled = false, -- set false to disable multi-kill detection + notifications
     multiKillWindow = 4000,  -- ms, window tính từ kill trước
     multiKills = {
         { count = 2, name = "DOUBLE KILL", sound = "double_kill" },
@@ -58,8 +59,8 @@ KillStreakConfig = {
     adrenaline = {
         triggers        = {3, 5, 10, 15},  -- mốc kills để kích hoạt
         duration        = 10000,           -- ms tổng
-        invinciblePhase = 3000,            -- ms bất tử (phase 1)
-        damageResist    = 0.5,             -- hệ số damage nhận (phase 2, 0.5 = -50%)
+        invinciblePhase = 2500,            -- ms bất tử (phase 1)
+        damageResist    = 0.2,             -- hệ số damage nhận (phase 2, 0.5 = -50%)
         sound           = 'adrenaline',
     },
 }

@@ -151,28 +151,32 @@ Events:Subscribe('Player:Killed', function(victim, inflictor, position, weapon, 
     local consecutiveHeadshots = playerHeadshots[kid]
 
     -- ===== 4. Multi-kill tracking =====
-    local now = SharedUtils:GetTimeMS()
-    local mk  = playerMultiKill[kid] or { count = 0, lastKillTime = 0 }
-    local elapsed = now - mk.lastKillTime
-
-    if elapsed <= KillStreakConfig.multiKillWindow then
-        mk.count = mk.count + 1
-    else
-        mk.count = 1  -- window hết, kill này bắt đầu window mới
-    end
-    mk.lastKillTime = now
-    playerMultiKill[kid] = mk
-
-    -- Tìm multi-kill milestone (count == đúng mốc, hoặc count >= mốc cao nhất)
     local multiKill = nil
-    local maxMK = KillStreakConfig.multiKills[#KillStreakConfig.multiKills]
-    if mk.count >= maxMK.count then
-        multiKill = maxMK  -- Rampage và cao hơn đều dùng mốc cuối
-    else
-        for _, m in ipairs(KillStreakConfig.multiKills) do
-            if mk.count == m.count then
-                multiKill = m
-                break
+    local mk = { count = 0 }
+    local elapsed = 0
+    if KillStreakConfig.multiKillEnabled then
+        local now = SharedUtils:GetTimeMS()
+        mk  = playerMultiKill[kid] or { count = 0, lastKillTime = 0 }
+        elapsed = now - mk.lastKillTime
+
+        if elapsed <= KillStreakConfig.multiKillWindow then
+            mk.count = mk.count + 1
+        else
+            mk.count = 1  -- window hết, kill này bắt đầu window mới
+        end
+        mk.lastKillTime = now
+        playerMultiKill[kid] = mk
+
+        -- Tìm multi-kill milestone (count == đúng mốc, hoặc count >= mốc cao nhất)
+        local maxMK = KillStreakConfig.multiKills[#KillStreakConfig.multiKills]
+        if mk.count >= maxMK.count then
+            multiKill = maxMK  -- Rampage và cao hơn đều dùng mốc cuối
+        else
+            for _, m in ipairs(KillStreakConfig.multiKills) do
+                if mk.count == m.count then
+                    multiKill = m
+                    break
+                end
             end
         end
     end
@@ -188,14 +192,12 @@ Events:Subscribe('Player:Killed', function(victim, inflictor, position, weapon, 
     local hsStreak = getHeadshotStreak(consecutiveHeadshots)
 
     -- ===== Adrenaline trigger =====
-    if adrenalineActive[kid] == nil then
-        for _, t in ipairs(KillStreakConfig.adrenaline.triggers) do
-            if totalKills == t then
-                adrenalineActive[kid] = SharedUtils:GetTimeMS()
-                NetEvents:SendTo('KillStreak:OnAdrenaline', killer, KillStreakConfig.adrenaline.duration)
-                print(string.format('[KillStreak][SERVER] ADRENALINE: %s at %d kills', killer.name, totalKills))
-                break
-            end
+    for _, t in ipairs(KillStreakConfig.adrenaline.triggers) do
+        if totalKills == t then
+            adrenalineActive[kid] = SharedUtils:GetTimeMS()
+            NetEvents:SendTo('KillStreak:OnAdrenaline', killer, KillStreakConfig.adrenaline.duration)
+            print(string.format('[KillStreak][SERVER] ADRENALINE: %s at %d kills', killer.name, totalKills))
+            break
         end
     end
 
@@ -253,9 +255,9 @@ Events:Subscribe('Player:Killed', function(victim, inflictor, position, weapon, 
     -- ===== 10. Gửi NetEvent multi-kill nếu đạt mốc =====
     if multiKill ~= nil then
         NetEvents:SendTo('KillStreak:OnMultiKill', killer,
-            mk.count, multiKill.name, multiKill.sound)
+            multiKill.count, multiKill.name, multiKill.sound)
         print(string.format('[KillStreak][SERVER] MultiKill sent to %s | %s (%dx)',
-            killer.name, multiKill.name, mk.count))
+            killer.name, multiKill.name, multiKill.count))
     end
 end)
 
