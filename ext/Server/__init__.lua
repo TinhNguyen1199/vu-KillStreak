@@ -14,6 +14,7 @@ local playerHeadshots = {}
 local playerMultiKill = {}  -- id -> { count, lastKillTime }
 local firstBloodClaimed = false
 local lastKilledBy    = {}  -- playerId -> id của người vừa giết họ
+local adrenalineActive = {}  -- playerId -> startTime (ms)
 
 -- ----------------------------------------
 -- Helper
@@ -42,6 +43,42 @@ local function getHeadshotStreak(count)
 end
 
 -- ----------------------------------------
+-- Adrenaline: block/giảm damage theo phase
+-- ----------------------------------------
+Hooks:Install('Soldier:Damage', 200, function(hookCtx, soldier, info, giverInfo)
+    if soldier ~= nil and soldier.player ~= nil then
+        local startTime = adrenalineActive[soldier.player.id]
+        if startTime ~= nil then
+            local elapsed = SharedUtils:GetTimeMS() - startTime
+            if elapsed < KillStreakConfig.adrenaline.invinciblePhase then
+                hookCtx:Return()  -- phase 1: bất tử hoàn toàn
+                return
+            elseif elapsed < KillStreakConfig.adrenaline.duration then
+                info:MakeWritable()
+                info.damage = info.damage * KillStreakConfig.adrenaline.damageResist
+            end
+        end
+    end
+    hookCtx:Pass(soldier, info, giverInfo)
+end)
+
+-- ----------------------------------------
+-- Adrenaline: timer hết hạn → clear state + báo client
+-- ----------------------------------------
+Events:Subscribe('UpdateManager:Update', function()
+    local now = SharedUtils:GetTimeMS()
+    for pid, startTime in pairs(adrenalineActive) do
+        if now - startTime >= KillStreakConfig.adrenaline.duration then
+            adrenalineActive[pid] = nil
+            local p = PlayerManager:GetPlayerById(pid)
+            if p ~= nil then
+                NetEvents:SendTo('KillStreak:OnAdrenalineEnded', p)
+            end
+        end
+    end
+end)
+
+-- ----------------------------------------
 -- Reset first blood khi load map mới
 -- ----------------------------------------
 Events:Subscribe('Level:Loaded', function()
@@ -67,6 +104,7 @@ Events:Subscribe('Player:Killed', function(victim, inflictor, position, weapon, 
         local oldStreak = playerKills[vid] or 0
         playerKills[vid]     = 0
         playerHeadshots[vid] = 0
+        adrenalineActive[vid] = nil  -- chết → mất adrenaline
 
         -- Lấy tên killer (nếu có) để hiển thị "Kill streak ended by X"
         local killerName = ''
@@ -149,6 +187,18 @@ Events:Subscribe('Player:Killed', function(victim, inflictor, position, weapon, 
     end
     local hsStreak = getHeadshotStreak(consecutiveHeadshots)
 
+    -- ===== Adrenaline trigger =====
+    if adrenalineActive[kid] == nil then
+        for _, t in ipairs(KillStreakConfig.adrenaline.triggers) do
+            if totalKills == t then
+                adrenalineActive[kid] = SharedUtils:GetTimeMS()
+                NetEvents:SendTo('KillStreak:OnAdrenaline', killer, KillStreakConfig.adrenaline.duration)
+                print(string.format('[KillStreak][SERVER] ADRENALINE: %s at %d kills', killer.name, totalKills))
+                break
+            end
+        end
+    end
+
     local streakInfo  = streak     and ('streak=' .. streak.name)        or 'no-streak'
     local hsInfo      = hsStreak  and ('hs=' .. hsStreak.name)           or 'no-hs'
     local mkInfo      = multiKill and ('mk=' .. multiKill.name .. '(' .. mk.count .. 'x)') or 'no-mk'
@@ -219,5 +269,6 @@ Events:Subscribe('Player:Left', function(player)
         playerHeadshots[player.id] = nil
         playerMultiKill[player.id] = nil
         lastKilledBy[player.id]    = nil
+        adrenalineActive[player.id] = nil
     end
 end)

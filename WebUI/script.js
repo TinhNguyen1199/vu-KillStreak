@@ -502,3 +502,33 @@ function showStreakEnded(oldStreak, killerName) {
         el.style.animation = '';
     }, 2300);
 }
+
+// ============================================================
+// Adrenaline Mode — viền đỏ pulse + countdown
+// ============================================================
+var _adrenalineInterval = null;
+
+window.showAdrenaline = function(durationMs) {
+    var overlay = document.getElementById('adrenaline-overlay');
+    if (!overlay) return;
+
+    overlay.classList.remove('hidden');
+    overlay.classList.add('active');
+
+    if (_adrenalineInterval) clearInterval(_adrenalineInterval);
+    _adrenalineInterval = setTimeout(function() {
+        _adrenalineInterval = null;
+        window.hideAdrenaline();
+    }, durationMs || 10000);
+};
+
+window.hideAdrenaline = function() {
+    var overlay = document.getElementById('adrenaline-overlay');
+    if (!overlay) return;
+    overlay.classList.add('hidden');
+    overlay.classList.remove('active');
+    if (_adrenalineInterval) {
+        clearInterval(_adrenalineInterval);
+        _adrenalineInterval = null;
+    }
+};

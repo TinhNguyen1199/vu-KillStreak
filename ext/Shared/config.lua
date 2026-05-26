@@ -53,4 +53,13 @@ KillStreakConfig = {
         { count = 4, name = "QUAD KILL",   sound = "quad_kill"   },
         { count = 5, name = "RAMPAGE",     sound = "rampage"     },
     },
+
+    -- Adrenaline Mode: kích hoạt khi đạt các mốc killstreak
+    adrenaline = {
+        triggers        = {3, 5, 10, 15},  -- mốc kills để kích hoạt
+        duration        = 10000,           -- ms tổng
+        invinciblePhase = 3000,            -- ms bất tử (phase 1)
+        damageResist    = 0.5,             -- hệ số damage nhận (phase 2, 0.5 = -50%)
+        sound           = 'adrenaline',
+    },
 }

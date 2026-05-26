@@ -202,6 +202,20 @@ NetEvents:Subscribe('KillStreak:OnMultiKill', function(count, name, sound)
 end)
 
 -- ----------------------------------------
+-- Adrenaline Mode
+-- ----------------------------------------
+NetEvents:Subscribe('KillStreak:OnAdrenaline', function(durationMs)
+    print(string.format('[KillStreak][CLIENT] Adrenaline activated | duration=%d', durationMs or 0))
+    WebUI:ExecuteJS(string.format('showAdrenaline(%d)', durationMs or 10000))
+    playSound(KillStreakConfig.adrenaline.sound)
+end)
+
+NetEvents:Subscribe('KillStreak:OnAdrenalineEnded', function()
+    print('[KillStreak][CLIENT] Adrenaline ended')
+    WebUI:ExecuteJS('hideAdrenaline()')
+end)
+
+-- ----------------------------------------
 -- Nhận sự kiện reset từ server
 -- ----------------------------------------
 NetEvents:Subscribe('KillStreak:OnReset', function(oldStreak, killerName)

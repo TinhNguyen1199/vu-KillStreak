@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Preview — Adrenaline Mode</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: #1a1a1a; }
+        #preview-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 9999;
+            pointer-events: all;
+        }
+        #preview-controls button {
+            padding: 8px 18px;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            letter-spacing: 1px;
+        }
+        #btn-trigger  { background: #cc2200; color: #fff; }
+        #btn-stop     { background: #333; color: #aaa; }
+        #btn-trigger:hover { background: #ff3300; }
+        #btn-stop:hover    { background: #555; }
+    </style>
+</head>
+<body>
+
+    <!-- Fake game HUD background hint -->
+    <div id="kill-counter">
+        <div id="kill-accent-bar"></div>
+        <div id="kill-inner">
+            <div id="kill-icon">KILLS</div>
+            <div id="kill-number">5</div>
+        </div>
+    </div>
+    <div id="streak-progress">
+        <div id="progress-text">7 kills → DOMINATING</div>
+    </div>
+
+    <!-- Adrenaline overlay -->
+    <div id="adrenaline-overlay" class="hidden"></div>
+
+    <!-- Controls -->
+    <div id="preview-controls">
+        <button id="btn-trigger" onclick="showAdrenaline(10000)">▶ TRIGGER ADRENALINE</button>
+        <button id="btn-stop"    onclick="hideAdrenaline()">■ STOP</button>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Auto-trigger khi mở trang
+        setTimeout(function() { showAdrenaline(10000); }, 300);
+    </script>
+</body>
+</html>
