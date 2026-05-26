@@ -1,620 +1,768 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KillStreak HUD — Preview</title>
-    <style>
-        /* Reset */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+<meta charset="UTF-8">
+<title>KillStreak UI Preview — NEW DESIGN</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            background: #1a1a1a url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="%23333" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="%231a1a1a"/><rect width="100" height="100" fill="url(%23grid)" /></svg>');
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            font-family: 'Arial Black', Arial, sans-serif;
-            user-select: none;
-            position: relative;
-        }
+body {
+    background: #0d1117;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Arial Black', Arial, sans-serif;
+    user-select: none;
+}
 
-        /* Instruction panel */
-        #instruction-panel {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.9);
-            border: 1px solid #666;
-            padding: 12px 16px;
-            font-size: 12px;
-            color: #aaa;
-            max-width: 300px;
-            z-index: 10000;
-            line-height: 1.5;
-            font-family: monospace;
-        }
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 25% 65%, rgba(30,55,80,0.5) 0%, transparent 55%),
+        radial-gradient(ellipse at 75% 25%, rgba(70,35,15,0.4) 0%, transparent 50%),
+        linear-gradient(180deg, #0d1117 0%, #151e2a 50%, #0d1520 100%);
+    z-index: -1;
+}
 
-        #instruction-panel strong {
-            color: #fff;
-            display: block;
-            margin-bottom: 6px;
-        }
+/* ── Control panel ── */
+#controls {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+    z-index: 9999;
+    background: rgba(0,0,0,0.88);
+    padding: 10px 14px;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    max-width: 96vw;
+}
 
-        .demo-button {
-            background: #0066ff;
-            border: none;
-            padding: 8px 12px;
-            color: white;
-            cursor: pointer;
-            margin: 3px 0;
-            font-size: 11px;
-            border-radius: 2px;
-            display: inline-block;
-            width: 100%;
-            margin-top: 6px;
-        }
+.btn {
+    display: block;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    border: none;
+    border-radius: 3px;
+    text-transform: uppercase;
+}
+.btn:hover { opacity: 0.8; }
+.btn-orange { background: #bb3d00; color: #fff; }
+.btn-red    { background: #990000; color: #fff; }
+.btn-purple { background: #5500aa; color: #fff; }
+.btn-blue   { background: #004499; color: #fff; }
+.btn-gray   { background: #3a3a3a; color: #ccc; }
+.btn-gold   { background: #775500; color: #fff; }
+.btn-teal   { background: #006655; color: #fff; }
+.btn-label  { background: transparent; color: #555; cursor: default; font-size: 10px; padding: 6px 4px; }
 
-        .demo-button:hover {
-            background: #0088ff;
-        }
+/* ── Utility ── */
+.hidden { display: none !important; }
 
-        .badge-new {
-            display: inline-block;
-            background: #ff6600;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 2px;
-            font-size: 10px;
-            margin-left: 5px;
-            font-weight: bold;
-        }
+@keyframes fadeOut {
+    0%   { opacity: 1; }
+    100% { opacity: 0; }
+}
 
-        /* ============== KS UI STYLING ============== */
+/* ============================================================
+   1. KILL COUNTER — accent bar trái, layout sạch hơn
+   ============================================================ */
+#kill-counter {
+    position: fixed;
+    top: 28px;
+    left: 28px;
+    display: flex;
+    align-items: stretch;
+    background: rgba(0,0,0,0.72);
+    border: 1px solid rgba(255,80,0,0.4);
+    border-radius: 4px;
+    overflow: hidden;
+}
 
-        /* Kill Counter — góc trên trái */
-        #kill-counter {
-            position: fixed;
-            top: 30px;
-            left: 30px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 60, 0, 0.6);
-            border-radius: 4px;
-            padding: 6px 12px;
-            color: #ff6600;
-            font-size: 22px;
-            font-weight: bold;
-            text-shadow: 0 0 8px #ff4400;
-            display: flex;
-            align-items: center;
-        }
+#kill-accent-bar {
+    display: block;
+    width: 4px;
+    background: linear-gradient(180deg, #ff6600 0%, #cc2200 100%);
+    flex-shrink: 0;
+}
 
-        #kill-icon {
-            display: block;
-            font-size: 12px;
-            opacity: 0.7;
-            margin-right: 8px;
-            letter-spacing: 1px;
-        }
+#kill-inner {
+    display: block;
+    padding: 6px 14px 6px 10px;
+}
 
-        #kill-number {
-            display: block;
-        }
+#kill-icon {
+    display: block;
+    font-size: 10px;
+    font-family: Arial, sans-serif;
+    font-weight: normal;
+    letter-spacing: 3px;
+    color: rgba(255,120,60,0.7);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
 
-        /* Streak Progress — bên dưới kill counter (trái) */
-        #streak-progress {
-            position: fixed;
-            top: 68px;
-            left: 30px;
-            text-align: left;
-        }
+#kill-number {
+    display: block;
+    font-size: 30px;
+    font-weight: 900;
+    color: #ff6600;
+    text-shadow: 0 0 10px rgba(255,80,0,0.7), 0 0 22px rgba(255,60,0,0.35);
+    line-height: 1;
+}
 
-        #progress-text {
-            display: block;
-            font-size: 13px;
-            color: #ffaa66;
-            text-shadow: 1px 1px 0 #000;
-            font-family: Arial, sans-serif;
-            font-weight: normal;
-            opacity: 0.9;
-            letter-spacing: 1px;
-        }
+/* ── Streak Progress ── */
+#streak-progress {
+    position: fixed;
+    top: 90px;
+    left: 28px;
+}
 
-        /* Revenge Badge */
-        #revenge-badge {
-            position: fixed;
-            top: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            white-space: nowrap;
-        }
+#progress-text {
+    display: block;
+    font-size: 12px;
+    font-family: Arial, sans-serif;
+    font-weight: normal;
+    color: #ffaa66;
+    text-shadow: 1px 1px 0 #000;
+    letter-spacing: 1px;
+    opacity: 0.82;
+}
 
-        #revenge-text {
-            display: block;
-            font-size: 52px;
-            font-weight: 900;
-            color: #ff6600;
-            text-shadow: 0 0 12px #ff4400, 0 0 35px #aa2200, 2px 2px 0 #000;
-            letter-spacing: 6px;
-            text-transform: uppercase;
-        }
+/* ============================================================
+   2. STREAK MESSAGE — panel với border-color per streak
+   ============================================================ */
+#streak-message {
+    position: fixed;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+}
 
-        /* Server Announce */
-        #server-announce {
-            position: fixed;
-            top: 35%;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            white-space: nowrap;
-        }
+#streak-panel {
+    display: block;
+    padding: 14px 44px 16px;
+    background: rgba(0,0,0,0.80);
+    border-top: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+}
 
-        #announce-name {
-            font-size: 28px;
-            font-weight: 900;
-            color: #66ccff;
-            text-shadow: 0 0 10px #0088ff, 2px 2px 0 #000;
-            letter-spacing: 3px;
-        }
+#streak-name {
+    display: block;
+    font-size: 46px;
+    font-weight: 900;
+    letter-spacing: 7px;
+    text-transform: uppercase;
+    line-height: 1;
+}
 
-        #announce-streak {
-            font-size: 38px;
-            font-weight: 900;
-            color: #ffffff;
-            text-shadow: 0 0 10px #0088ff, 0 0 28px #0044aa, 2px 2px 0 #000;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-        }
+#streak-divider {
+    display: block;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.3;
+    margin: 9px auto;
+    width: 55%;
+}
 
-        #announce-kills {
-            font-size: 18px;
-            color: #99ddff;
-            text-shadow: 1px 1px 0 #000;
-            margin-top: 4px;
-            letter-spacing: 2px;
-        }
+#streak-kills {
+    display: block;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    letter-spacing: 5px;
+    color: rgba(255,255,255,0.65);
+    text-transform: uppercase;
+}
 
-        /* First Blood */
-        #firstblood-badge {
-            position: fixed;
-            top: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            white-space: nowrap;
-        }
+/* Per-streak: color cascades xuống panel via currentColor */
+.sk-killingspree #streak-panel { color: #ffaa00; }
+.sk-killingspree #streak-name {
+    color: #ffaa00;
+    text-shadow: 0 0 14px #ff8800, 0 0 36px rgba(255,120,0,0.45), 2px 2px 0 #000;
+}
+.sk-rampage #streak-panel { color: #ff6600; }
+.sk-rampage #streak-name {
+    color: #ff6600;
+    text-shadow: 0 0 14px #ff4400, 0 0 38px rgba(220,50,0,0.5), 2px 2px 0 #000;
+}
+.sk-dominating #streak-panel { color: #ff3300; }
+.sk-dominating #streak-name {
+    color: #ff3300;
+    text-shadow: 0 0 16px #ff1100, 0 0 42px rgba(200,0,0,0.55), 2px 2px 0 #000;
+}
+.sk-unstoppable #streak-panel { color: #cc44ff; }
+.sk-unstoppable #streak-name {
+    color: #cc44ff;
+    text-shadow: 0 0 16px #aa00ff, 0 0 44px rgba(120,0,220,0.55), 2px 2px 0 #000;
+}
+.sk-godlike #streak-panel { color: #ffe040; }
+.sk-godlike #streak-name {
+    color: #ffffff;
+    text-shadow:
+        0 0 18px #ffee00,
+        0 0 48px rgba(255,210,0,0.65),
+        0 0 70px rgba(255,160,0,0.35),
+        2px 2px 0 #000;
+}
 
-        #firstblood-text {
-            display: block;
-            font-size: 52px;
-            font-weight: 900;
-            color: #ff2222;
-            text-shadow: 0 0 12px #ff0000, 0 0 35px #880000, 2px 2px 0 #000;
-            letter-spacing: 6px;
-            text-transform: uppercase;
-        }
+@keyframes streakSlideIn {
+    0%   { opacity: 0; transform: translateX(-50%) translateY(-22px) scaleY(0.78); }
+    10%  { opacity: 1; transform: translateX(-50%) translateY(3px)   scaleY(1.05); }
+    18%  { transform: translateX(-50%) translateY(0) scaleY(1); }
+    72%  { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) translateY(0) scaleY(1); }
+}
+.streak-animate { animation: streakSlideIn 3.0s cubic-bezier(0.22,1,0.36,1) forwards; }
 
-        /* Streak Message — top-center */
-        #streak-message {
-            position: fixed;
-            top: 6%;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            animation: streakFade 0.5s ease-out;
-        }
+/* ============================================================
+   3. MULTI-KILL — ribbon với colored border
+   ============================================================ */
+#multikill-badge {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+}
 
-        #streak-name {
-            font-size: 48px;
-            font-weight: 900;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-        }
+#multikill-ribbon {
+    display: block;
+    padding: 10px 56px;
+    background: rgba(0,0,0,0.82);
+    position: relative;
+}
 
-        #streak-kills {
-            font-size: 24px;
-            color: #ffcc00;
-            text-shadow: 0 0 8px #ff8800, 2px 2px 0 #000;
-            margin-top: 6px;
-            letter-spacing: 2px;
-        }
+/* top / bottom lines via pseudo */
+#multikill-ribbon::before,
+#multikill-ribbon::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+}
+#multikill-ribbon::before { top: 0; }
+#multikill-ribbon::after  { bottom: 0; }
 
-        /* Per-streak colors */
-        .sk-killingspree #streak-name {
-            color: #ffaa00;
-            text-shadow: 0 0 12px #ff8800, 0 0 30px #ff6600, 2px 2px 0 #000;
-        }
-        .sk-rampage #streak-name {
-            color: #ff6600;
-            text-shadow: 0 0 12px #ff4400, 0 0 30px #cc2200, 2px 2px 0 #000;
-        }
-        .sk-dominating #streak-name {
-            color: #ff3300;
-            text-shadow: 0 0 12px #ff2200, 0 0 35px #cc0000, 2px 2px 0 #000;
-        }
-        .sk-unstoppable #streak-name {
-            color: #cc44ff;
-            text-shadow: 0 0 12px #aa00ff, 0 0 35px #6600cc, 2px 2px 0 #000;
-        }
-        .sk-godlike #streak-name {
-            color: #ffffff;
-            text-shadow: 0 0 15px #ffdd00, 0 0 40px #ffaa00, 2px 2px 0 #000;
-        }
+#multikill-name {
+    display: block;
+    font-weight: 900;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+}
 
-        /* Headshot Badge */
-        #headshot-badge {
-            position: fixed;
-            top: 15%;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            justify-content: center;
-        }
+.mk-double #multikill-ribbon { border-left: 3px solid #ffdd00; border-right: 3px solid #ffdd00; }
+.mk-double #multikill-ribbon::before,
+.mk-double #multikill-ribbon::after { background: #ffdd00; }
+.mk-double #multikill-name {
+    font-size: 36px;
+    color: #ffdd00;
+    text-shadow: 0 0 12px #ffaa00, 0 0 28px rgba(255,160,0,0.45), 2px 2px 0 #000;
+}
 
-        .headshot-icon {
-            width: 64px;
-            height: 64px;
-            background-image: url('WebUI/images/headshot.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            filter: drop-shadow(0 0 8px #ff0000) drop-shadow(0 0 16px #cc0000);
-        }
+.mk-triple #multikill-ribbon { border-left: 3px solid #ff8800; border-right: 3px solid #ff8800; }
+.mk-triple #multikill-ribbon::before,
+.mk-triple #multikill-ribbon::after { background: #ff8800; }
+.mk-triple #multikill-name {
+    font-size: 42px;
+    color: #ff8800;
+    text-shadow: 0 0 14px #ff6600, 0 0 34px rgba(255,100,0,0.5), 2px 2px 0 #000;
+}
 
-        /* Headshot Message */
-        #headshot-message {
-            position: fixed;
-            top: 22%;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-        }
+.mk-quad #multikill-ribbon { border-left: 3px solid #ff3300; border-right: 3px solid #ff3300; }
+.mk-quad #multikill-ribbon::before,
+.mk-quad #multikill-ribbon::after { background: #ff3300; }
+.mk-quad #multikill-name {
+    font-size: 48px;
+    color: #ff3300;
+    text-shadow: 0 0 16px #ff1100, 0 0 40px rgba(200,0,0,0.55), 2px 2px 0 #000;
+}
 
-        #headshot-name {
-            font-size: 36px;
-            font-weight: 900;
-            color: #ffffff;
-            text-shadow: 0 0 10px #00ccff, 0 0 28px #0066ff, 2px 2px 0 #000;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-        }
+.mk-rampage #multikill-ribbon { border-left: 3px solid #cc44ff; border-right: 3px solid #cc44ff; }
+.mk-rampage #multikill-ribbon::before,
+.mk-rampage #multikill-ribbon::after { background: #cc44ff; }
+.mk-rampage #multikill-name {
+    font-size: 54px;
+    color: #cc44ff;
+    text-shadow: 0 0 18px #aa00ff, 0 0 46px rgba(140,0,240,0.55), 2px 2px 0 #000;
+}
 
-        #headshot-count {
-            font-size: 20px;
-            color: #66eeff;
-            text-shadow: 0 0 8px #0099ff, 2px 2px 0 #000;
-            margin-top: 4px;
-            letter-spacing: 2px;
-        }
+@keyframes ribbonPop {
+    0%   { transform: translateX(-50%) scaleX(0.15) scaleY(0.7); opacity: 0; }
+    12%  { transform: translateX(-50%) scaleX(1.06) scaleY(1.04); opacity: 1; }
+    22%  { transform: translateX(-50%) scaleX(1) scaleY(1); }
+    75%  { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) scaleX(1) scaleY(1); }
+}
+.multikill-animate { animation: ribbonPop 2.6s cubic-bezier(0.22,1,0.36,1) forwards; }
 
-        /* Multi-Kill Badge */
-        #multikill-badge {
-            position: fixed;
-            top: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            white-space: nowrap;
-        }
+/* ============================================================
+   4. HEADSHOT — gộp icon + text, slide từ phải
+   ============================================================ */
+#headshot-badge {
+    position: fixed;
+    top: 17%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background: rgba(0,0,0,0.68);
+    padding: 8px 20px 8px 14px;
+    border-left: 3px solid #ff2222;
+}
 
-        #multikill-name {
-            display: block;
-            font-weight: 900;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-        }
+.headshot-icon-fallback {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: rgba(180,0,0,0.22);
+    border: 2px solid #ff2222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff5555;
+    font-size: 18px;
+    font-weight: 900;
+    filter: drop-shadow(0 0 6px rgba(255,0,0,0.6));
+    flex-shrink: 0;
+}
 
-        .mk-double #multikill-name {
-            font-size: 38px;
-            color: #ffdd00;
-            text-shadow: 0 0 12px #ffaa00, 0 0 30px #ff8800, 2px 2px 0 #000;
-        }
-        .mk-triple #multikill-name {
-            font-size: 44px;
-            color: #ff8800;
-            text-shadow: 0 0 12px #ff6600, 0 0 35px #ff4400, 2px 2px 0 #000;
-        }
-        .mk-quad #multikill-name {
-            font-size: 50px;
-            color: #ff3300;
-            text-shadow: 0 0 15px #ff2200, 0 0 40px #cc0000, 2px 2px 0 #000;
-        }
-        .mk-rampage #multikill-name {
-            font-size: 56px;
-            color: #cc44ff;
-            text-shadow: 0 0 15px #aa00ff, 0 0 45px #6600cc, 2px 2px 0 #000;
-        }
+#headshot-label { display: block; }
 
-        /* Streak Ended */
-        #streak-ended {
-            position: fixed;
-            top: 40%;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-        }
+#headshot-name {
+    display: block;
+    font-size: 26px;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow: 0 0 10px #ff4444, 0 0 24px rgba(200,0,0,0.45), 2px 2px 0 #000;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
 
-        #ended-text {
-            font-size: 28px;
-            text-shadow: 2px 2px 0 #000;
-        }
+#headshot-count {
+    display: block;
+    font-size: 12px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    color: rgba(255,110,110,0.82);
+    letter-spacing: 2px;
+    margin-top: 3px;
+}
 
-        .ended-by-player #ended-text {
-            color: #ff4444;
-        }
+@keyframes headshotSlide {
+    0%   { transform: translateX(calc(-50% + 30px)); opacity: 0; }
+    10%  { transform: translateX(-52%); opacity: 1; }
+    16%  { transform: translateX(-50%); }
+    75%  { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%); }
+}
+.headshot-animate { animation: headshotSlide 2.2s cubic-bezier(0.22,1,0.36,1) forwards; }
 
-        .ended-env #ended-text {
-            color: #aaaaaa;
-        }
+/* ============================================================
+   5. STREAK ENDED — panel + border, lebih besar
+   ============================================================ */
+#streak-ended {
+    position: fixed;
+    top: 38%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+}
 
-        #ended-count {
-            font-size: 18px;
-            text-shadow: 1px 1px 0 #000;
-        }
+#ended-panel {
+    display: block;
+    padding: 12px 38px;
+    background: rgba(0,0,0,0.76);
+}
 
-        .ended-by-player #ended-count {
-            color: #ff8888;
-        }
+#ended-text {
+    display: block;
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+}
 
-        .ended-env #ended-count {
-            color: #888888;
-        }
+#ended-count {
+    display: block;
+    font-size: 15px;
+    font-family: Arial, sans-serif;
+    letter-spacing: 2px;
+    margin-top: 4px;
+    opacity: 0.82;
+}
 
-        .hidden {
-            display: none !important;
-        }
-    </style>
+.ended-by-player #ended-panel { border-top: 2px solid #ff4444; border-bottom: 2px solid #ff4444; }
+.ended-by-player #ended-text  { color: #ff4444; text-shadow: 0 0 12px rgba(200,0,0,0.6), 2px 2px 0 #000; }
+.ended-by-player #ended-count { color: #ff8888; text-shadow: 1px 1px 0 #000; }
+
+.ended-env #ended-panel { border-top: 2px solid #666; border-bottom: 2px solid #666; }
+.ended-env #ended-text  { color: #aaaaaa; text-shadow: 1px 1px 0 #000; }
+.ended-env #ended-count { color: #666; text-shadow: 1px 1px 0 #000; }
+
+@keyframes endedFadeIn {
+    0%   { opacity: 0; transform: translateX(-50%) scale(0.82); }
+    12%  { opacity: 1; transform: translateX(-50%) scale(1.06); }
+    22%  { transform: translateX(-50%) scale(1); }
+    75%  { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) scale(1); }
+}
+.ended-animate { animation: endedFadeIn 2.2s cubic-bezier(0.22,1,0.36,1) forwards; }
+
+/* ============================================================
+   6. SERVER ANNOUNCE — panel + separator + blue border
+   ============================================================ */
+#server-announce {
+    position: fixed;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+    background: rgba(0,0,0,0.80);
+    border-top: 2px solid #0088ff;
+    border-bottom: 2px solid #0088ff;
+    padding: 12px 44px;
+}
+
+#announce-name {
+    display: block;
+    font-size: 20px;
+    font-weight: 900;
+    color: #66ccff;
+    text-shadow: 0 0 10px #0088ff, 2px 2px 0 #000;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+#announce-separator {
+    display: block;
+    height: 1px;
+    background: rgba(0,136,255,0.3);
+    margin: 7px auto;
+    width: 75%;
+}
+
+#announce-streak {
+    display: block;
+    font-size: 36px;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow: 0 0 12px #0088ff, 0 0 30px rgba(0,80,200,0.45), 2px 2px 0 #000;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+#announce-kills {
+    display: block;
+    font-size: 13px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    color: #99ddff;
+    text-shadow: 1px 1px 0 #000;
+    margin-top: 5px;
+    letter-spacing: 3px;
+}
+
+@keyframes announcePop {
+    0%   { transform: translateX(-50%) scale(0.72); opacity: 0; }
+    10%  { transform: translateX(-50%) scale(1.04); opacity: 1; }
+    20%  { transform: translateX(-50%) scale(1); }
+    78%  { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) scale(1); }
+}
+.announce-animate { animation: announcePop 3.5s cubic-bezier(0.22,1,0.36,1) forwards; }
+
+/* ============================================================
+   7. REVENGE — panel + orange border
+   ============================================================ */
+#revenge-badge {
+    position: fixed;
+    top: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+    background: rgba(0,0,0,0.76);
+    border-top: 2px solid #ff6600;
+    border-bottom: 2px solid #ff6600;
+    padding: 10px 48px;
+}
+
+#revenge-text {
+    display: block;
+    font-size: 50px;
+    font-weight: 900;
+    color: #ff6600;
+    text-shadow: 0 0 14px #ff4400, 0 0 38px rgba(220,60,0,0.45), 2px 2px 0 #000;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+}
+
+@keyframes revengePop {
+    0%   { transform: translateX(-50%) scale(0.45); opacity: 0; }
+    10%  { transform: translateX(-50%) scale(1.12); opacity: 1; }
+    20%  { transform: translateX(-50%) scale(1); }
+    75%  { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) scale(1); }
+}
+.revenge-animate { animation: revengePop 2.6s cubic-bezier(0.22,1,0.36,1) forwards; }
+
+/* ============================================================
+   8. FIRST BLOOD — panel + red border
+   ============================================================ */
+#firstblood-badge {
+    position: fixed;
+    top: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+    background: rgba(0,0,0,0.76);
+    border-top: 2px solid #ff2222;
+    border-bottom: 2px solid #ff2222;
+    padding: 10px 48px;
+}
+
+#firstblood-text {
+    display: block;
+    font-size: 50px;
+    font-weight: 900;
+    color: #ff2222;
+    text-shadow: 0 0 14px #ff0000, 0 0 40px rgba(180,0,0,0.55), 2px 2px 0 #000;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+}
+
+@keyframes firstBloodPop {
+    0%   { transform: translateX(-50%) scale(0.45); opacity: 0; }
+    10%  { transform: translateX(-50%) scale(1.14); opacity: 1; }
+    20%  { transform: translateX(-50%) scale(1); }
+    75%  { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) scale(1); }
+}
+.firstblood-animate { animation: firstBloodPop 2.6s cubic-bezier(0.22,1,0.36,1) forwards; }
+</style>
 </head>
 <body>
 
-    <!-- Kill Counter -->
-    <div id="kill-counter" class="hidden">
+<!-- Kill Counter -->
+<div id="kill-counter">
+    <div id="kill-accent-bar"></div>
+    <div id="kill-inner">
         <div id="kill-icon">KILLS</div>
-        <div id="kill-number">0</div>
+        <div id="kill-number">7</div>
     </div>
+</div>
+<div id="streak-progress">
+    <div id="progress-text">3 kills → DOMINATING</div>
+</div>
 
-    <!-- Streak Progress -->
-    <div id="streak-progress" class="hidden">
-        <div id="progress-text">2 kills → RAMPAGE</div>
-    </div>
-
-    <!-- Revenge Badge -->
-    <div id="revenge-badge" class="hidden">
-        <div id="revenge-text">REVENGE</div>
-    </div>
-
-    <!-- Server Announce -->
-    <div id="server-announce" class="hidden">
-        <div id="announce-name">Player123</div>
-        <div id="announce-streak">is UNSTOPPABLE!</div>
-        <div id="announce-kills">10 KILLS</div>
-    </div>
-
-    <!-- First Blood -->
-    <div id="firstblood-badge" class="hidden">
-        <div id="firstblood-text">FIRST BLOOD</div>
-    </div>
-
-    <!-- Streak Message -->
-    <div id="streak-message" class="hidden">
+<!-- Streak Message -->
+<div id="streak-message" class="hidden">
+    <div id="streak-panel">
         <div id="streak-name">KILLING SPREE</div>
+        <div id="streak-divider"></div>
         <div id="streak-kills">3 KILLS</div>
     </div>
+</div>
 
-    <!-- Headshot Badge (image) -->
-    <div id="headshot-badge" class="hidden"></div>
-
-    <!-- Headshot Message -->
-    <div id="headshot-message" class="hidden">
-        <div id="headshot-name">DOUBLE HEADSHOT</div>
-        <div id="headshot-count">2x</div>
-    </div>
-
-    <!-- Multi-Kill Badge -->
-    <div id="multikill-badge" class="hidden mk-double">
+<!-- Multi-Kill -->
+<div id="multikill-badge" class="hidden mk-double">
+    <div id="multikill-ribbon">
         <div id="multikill-name">DOUBLE KILL</div>
     </div>
+</div>
 
-    <!-- Streak Ended -->
-    <div id="streak-ended" class="hidden">
-        <div id="ended-text">Streak Ended</div>
-        <div id="ended-count">15 kill streak</div>
+<!-- Headshot (combined) -->
+<div id="headshot-badge" class="hidden">
+    <div class="headshot-icon-fallback">X</div>
+    <div id="headshot-label">
+        <div id="headshot-name">HEADSHOT</div>
+        <div id="headshot-count">1x</div>
     </div>
+</div>
 
-    <!-- Audio Elements -->
-    <audio id="snd-kill_normal" preload="auto">
-        <source src="WebUI/sounds/kill_normal.webm" type="audio/webm">
-    </audio>
-    <audio id="snd-kill_headshot" preload="auto">
-        <source src="WebUI/sounds/kill_headshot.webm" type="audio/webm">
-    </audio>
-    <audio id="snd-headshot_double" preload="auto">
-        <source src="WebUI/sounds/headshot_double.webm" type="audio/webm">
-    </audio>
-    <audio id="snd-headshot_triple" preload="auto">
-        <source src="WebUI/sounds/headshot_triple.webm" type="audio/webm">
-    </audio>
-    <audio id="snd-headshot_multi" preload="auto">
-        <source src="WebUI/sounds/headshot_multi.webm" type="audio/webm">
-    </audio>
-    <audio id="snd-streak_3" preload="auto">
-        <source src="WebUI/sounds/streak_3.webm" type="audio/webm">
-    </audio>
-    <audio id="snd-streak_5" preload="auto">
-        <source src="WebUI/sounds/streak_5.webm" type="audio/webm">
-    </audio>
-    <audio id="snd-streak_7" preload="auto">
-        <source src="WebUI/sounds/streak_7.webm" type="audio/webm">
-    </audio>
-    <audio id="snd-streak_10" preload="auto">
-        <source src="WebUI/sounds/streak_10.webm" type="audio/webm">
-    </audio>
-    <audio id="snd-streak_15" preload="auto">
-        <source src="WebUI/sounds/streak_15.webm" type="audio/webm">
-    </audio>
-    <audio id="snd-first_blood" preload="auto">
-        <source src="WebUI/sounds/first_blood.webm" type="audio/webm">
-    </audio>
-    <audio id="snd-revenge_kill" preload="auto">
-        <source src="WebUI/sounds/revenge_kill.webm" type="audio/webm">
-    </audio>
-    <audio id="snd-double_kill" preload="auto">
-        <source src="WebUI/sounds/double_kill.webm" type="audio/webm">
-    </audio>
-    <audio id="snd-triple_kill" preload="auto">
-        <source src="WebUI/sounds/triple_kill.webm" type="audio/webm">
-    </audio>
-    <audio id="snd-quad_kill" preload="auto">
-        <source src="WebUI/sounds/quad_kill.webm" type="audio/webm">
-    </audio>
-    <audio id="snd-rampage" preload="auto">
-        <source src="WebUI/sounds/rampage.webm" type="audio/webm">
-    </audio>
-    <audio id="snd-unstoppable" preload="auto">
-        <source src="WebUI/sounds/unstoppable.webm" type="audio/webm">
-    </audio>
+<!-- Server Announce -->
+<div id="server-announce" class="hidden">
+    <div id="announce-name">Ghost</div>
+    <div id="announce-separator"></div>
+    <div id="announce-streak">IS DOMINATING!</div>
+    <div id="announce-kills">10 KILLS</div>
+</div>
 
-    <!-- Instruction Panel -->
-    <div id="instruction-panel">
-        <strong>KillStreak HUD Preview</strong>
-        <span class="badge-new">v1.6.0</span>
-        <br>Demo các UI elements. Click để preview:
-        <button class="demo-button" onclick="demoKillCounter()">Kill Counter (top-left)</button>
-        <button class="demo-button" onclick="demoStreak('KILLING SPREE', 'sk-killingspree', 3)">KILLING SPREE</button>
-        <button class="demo-button" onclick="demoStreak('RAMPAGE', 'sk-rampage', 5)">RAMPAGE</button>
-        <button class="demo-button" onclick="demoStreak('DOMINATING', 'sk-dominating', 7)">DOMINATING</button>
-        <button class="demo-button" onclick="demoStreak('UNSTOPPABLE', 'sk-unstoppable', 10)">UNSTOPPABLE</button>
-        <button class="demo-button" onclick="demoStreak('GODLIKE', 'sk-godlike', 15)">GODLIKE</button>
-        <button class="demo-button" onclick="demoHeadshot(1)">Headshot (1 icon)</button>
-        <button class="demo-button" onclick="demoHeadshot(2)">Double Headshot (2 icons)</button>
-        <button class="demo-button" onclick="demoHeadshot(3)">Triple Headshot (3 icons)</button>
-        <button class="demo-button" onclick="demoHeadshot(5)">Multi Headshot (5 icons)</button>
-        <button class="demo-button" onclick="demoMultiKill('DOUBLE KILL', 'mk-double')">Double Kill</button>
-        <button class="demo-button" onclick="demoMultiKill('TRIPLE KILL', 'mk-triple')">Triple Kill</button>
-        <button class="demo-button" onclick="demoMultiKill('QUAD KILL', 'mk-quad')">Quad Kill</button>
-        <button class="demo-button" onclick="demoMultiKill('RAMPAGE', 'mk-rampage')">Rampage (multi)</button>
-        <button class="demo-button" onclick="demoFirstBlood()">First Blood</button>
-        <button class="demo-button" onclick="demoRevenge()">Revenge</button>
-        <button class="demo-button" onclick="demoServerAnnounce()">Server Announce</button>
-        <button class="demo-button" onclick="demoStreakEndedEnv()">Streak Ended (env)</button>
-        <button class="demo-button" onclick="demoStreakEndedPlayer()">Streak Ended (player)</button>
-        <button class="demo-button" onclick="clearAll()">Clear All</button>
+<!-- Revenge -->
+<div id="revenge-badge" class="hidden">
+    <div id="revenge-text">REVENGE</div>
+</div>
+
+<!-- First Blood -->
+<div id="firstblood-badge" class="hidden">
+    <div id="firstblood-text">FIRST BLOOD</div>
+</div>
+
+<!-- Streak Ended -->
+<div id="streak-ended" class="hidden">
+    <div id="ended-panel">
+        <div id="ended-text">STREAK ENDED</div>
+        <div id="ended-count">by Sniper420 (7 kills)</div>
     </div>
+</div>
 
-    <script>
-        function playSound(soundName) {
-            var audio = document.getElementById('snd-' + soundName);
-            if (audio) {
-                audio.currentTime = 0;
-                audio.play().catch(function(e) {});
-            }
-        }
+<!-- Controls -->
+<div id="controls">
+    <span class="btn btn-label">STREAK</span>
+    <button class="btn btn-orange" onclick="demoStreak('KILLING SPREE',3,'sk-killingspree')">Killing Spree</button>
+    <button class="btn btn-orange" onclick="demoStreak('RAMPAGE',5,'sk-rampage')">Rampage</button>
+    <button class="btn btn-red"    onclick="demoStreak('DOMINATING',7,'sk-dominating')">Dominating</button>
+    <button class="btn btn-purple" onclick="demoStreak('UNSTOPPABLE',10,'sk-unstoppable')">Unstoppable</button>
+    <button class="btn btn-gold"   onclick="demoStreak('GODLIKE',15,'sk-godlike')">Godlike</button>
+    <span class="btn btn-label">MULTI</span>
+    <button class="btn btn-gray"   onclick="demoMulti('DOUBLE KILL','mk-double')">Double</button>
+    <button class="btn btn-gray"   onclick="demoMulti('TRIPLE KILL','mk-triple')">Triple</button>
+    <button class="btn btn-gray"   onclick="demoMulti('QUAD KILL','mk-quad')">Quad</button>
+    <button class="btn btn-purple" onclick="demoMulti('RAMPAGE','mk-rampage')">Rampage</button>
+    <span class="btn btn-label">HS</span>
+    <button class="btn btn-red"    onclick="demoHeadshot('HEADSHOT',1)">1x</button>
+    <button class="btn btn-red"    onclick="demoHeadshot('DOUBLE HEADSHOT',2)">2x</button>
+    <button class="btn btn-red"    onclick="demoHeadshot('TRIPLE HEADSHOT',3)">3x</button>
+    <span class="btn btn-label">OTHER</span>
+    <button class="btn btn-blue"   onclick="demoAnnounce('Ghost','DOMINATING',10)">Announce</button>
+    <button class="btn btn-orange" onclick="demoRevenge()">Revenge</button>
+    <button class="btn btn-red"    onclick="demoFirstBlood()">First Blood</button>
+    <button class="btn btn-gray"   onclick="demoEnded(7,'Sniper420')">Ended (player)</button>
+    <button class="btn btn-gray"   onclick="demoEnded(5,'')">Ended (env)</button>
+    <button class="btn btn-teal"   onclick="cycleKillCounter()">Counter +1</button>
+</div>
 
-        function demoKillCounter() {
-            playSound('kill_normal');
-            var counter = document.getElementById('kill-counter');
-            var number = document.getElementById('kill-number');
-            number.textContent = '5';
-            counter.classList.remove('hidden');
-            setTimeout(function() { counter.classList.add('hidden'); }, 5000);
-        }
+<script>
+var _timers = {};
 
-        function demoStreak(name, cssClass, kills) {
-            playSound('kill_normal');
-            setTimeout(function() { playSound('streak_' + kills); }, 300);
-            var el = document.getElementById('streak-message');
-            var nameEl = document.getElementById('streak-name');
-            var killsEl = document.getElementById('streak-kills');
-            nameEl.textContent = name;
-            killsEl.textContent = kills + ' KILLS';
-            el.className = 'hidden';
-            if (cssClass) el.classList.add(cssClass);
-            el.classList.remove('hidden');
-            setTimeout(function() { el.classList.add('hidden'); }, 3000);
-        }
+function clearAnimate(el, key) {
+    el.classList.remove(
+        'streak-animate','multikill-animate','headshot-animate',
+        'ended-animate','announce-animate','revenge-animate','firstblood-animate'
+    );
+    if (_timers[key]) clearTimeout(_timers[key]);
+}
 
-        function demoHeadshot(count) {
-            count = count || 1;
-            playSound('kill_headshot');
-            var badge = document.getElementById('headshot-badge');
-            badge.innerHTML = '';
-            for (var i = 0; i < count; i++) {
-                var icon = document.createElement('div');
-                icon.className = 'headshot-icon';
-                badge.appendChild(icon);
-            }
-            badge.classList.remove('hidden');
-            setTimeout(function() { badge.classList.add('hidden'); }, 1500);
-        }
+function show(el) { el.classList.remove('hidden'); }
+function hide(el) { el.classList.add('hidden'); }
 
-        function demoMultiKill(name, cssClass) {
-            playSound('kill_normal');
-            setTimeout(function() { playSound('double_kill'); }, 300);
-            var el = document.getElementById('multikill-badge');
-            var nameEl = document.getElementById('multikill-name');
-            nameEl.textContent = name;
-            el.className = 'hidden';
-            el.classList.add(cssClass);
-            el.classList.remove('hidden');
-            setTimeout(function() { el.classList.add('hidden'); }, 3000);
-        }
+function demoStreak(name, kills, cls) {
+    var el = document.getElementById('streak-message');
+    clearAnimate(el, 'streak');
+    el.className = cls;
+    show(el);
+    document.getElementById('streak-name').textContent  = name;
+    document.getElementById('streak-kills').textContent = kills + ' KILLS';
+    void el.offsetHeight;
+    el.classList.add('streak-animate');
+    _timers.streak = setTimeout(function() { hide(el); }, 3100);
+}
 
-        function demoFirstBlood() {
-            playSound('first_blood');
-            var el = document.getElementById('firstblood-badge');
-            el.classList.remove('hidden');
-            setTimeout(function() { el.classList.add('hidden'); }, 3000);
-        }
+function demoMulti(name, cls) {
+    var el = document.getElementById('multikill-badge');
+    clearAnimate(el, 'multi');
+    el.className = cls;
+    show(el);
+    document.getElementById('multikill-name').textContent = name;
+    void el.offsetHeight;
+    el.classList.add('multikill-animate');
+    _timers.multi = setTimeout(function() { hide(el); }, 2700);
+}
 
-        function demoRevenge() {
-            playSound('revenge_kill');
-            var el = document.getElementById('revenge-badge');
-            el.classList.remove('hidden');
-            setTimeout(function() { el.classList.add('hidden'); }, 3000);
-        }
+function demoHeadshot(name, count) {
+    var el = document.getElementById('headshot-badge');
+    clearAnimate(el, 'headshot');
+    show(el);
+    document.getElementById('headshot-name').textContent  = name;
+    document.getElementById('headshot-count').textContent = count + 'x';
+    void el.offsetHeight;
+    el.classList.add('headshot-animate');
+    _timers.headshot = setTimeout(function() { hide(el); }, 2300);
+}
 
-        function demoServerAnnounce() {
-            playSound('streak_5');
-            var el = document.getElementById('server-announce');
-            el.classList.remove('hidden');
-            setTimeout(function() { el.classList.add('hidden'); }, 3000);
-        }
+function demoAnnounce(killer, streak, kills) {
+    var el = document.getElementById('server-announce');
+    clearAnimate(el, 'announce');
+    show(el);
+    document.getElementById('announce-name').textContent   = killer;
+    document.getElementById('announce-streak').textContent = 'IS ' + streak + '!';
+    document.getElementById('announce-kills').textContent  = kills + ' KILLS';
+    void el.offsetHeight;
+    el.classList.add('announce-animate');
+    _timers.announce = setTimeout(function() { hide(el); }, 3600);
+}
 
-        function demoStreakEndedEnv() {
-            var el = document.getElementById('streak-ended');
-            var textEl = document.getElementById('ended-text');
-            var countEl = document.getElementById('ended-count');
-            textEl.textContent = 'Streak Ended';
-            countEl.textContent = '15 kill streak';
-            el.className = 'hidden';
-            el.classList.add('ended-env');
-            el.classList.remove('hidden');
-            setTimeout(function() { el.classList.add('hidden'); }, 2000);
-        }
+function demoRevenge() {
+    var el = document.getElementById('revenge-badge');
+    clearAnimate(el, 'revenge');
+    show(el);
+    void el.offsetHeight;
+    el.classList.add('revenge-animate');
+    _timers.revenge = setTimeout(function() { hide(el); }, 2700);
+}
 
-        function demoStreakEndedPlayer() {
-            var el = document.getElementById('streak-ended');
-            var textEl = document.getElementById('ended-text');
-            var countEl = document.getElementById('ended-count');
-            textEl.textContent = 'Streak Ended';
-            countEl.textContent = 'by KillerName (10 kills)';
-            el.className = 'hidden';
-            el.classList.add('ended-by-player');
-            el.classList.remove('hidden');
-            setTimeout(function() { el.classList.add('hidden'); }, 2000);
-        }
+function demoFirstBlood() {
+    var el = document.getElementById('firstblood-badge');
+    clearAnimate(el, 'firstblood');
+    show(el);
+    void el.offsetHeight;
+    el.classList.add('firstblood-animate');
+    _timers.firstblood = setTimeout(function() { hide(el); }, 2700);
+}
 
-        function clearAll() {
-            document.querySelectorAll('audio').forEach(function(audio) {
-                audio.pause();
-                audio.currentTime = 0;
-            });
-            document.querySelectorAll('[id$="-badge"], [id$="-message"], [id$="-counter"], [id$="-progress"], [id$="-announce"], [id$="-ended"]').forEach(function(el) {
-                el.classList.add('hidden');
-            });
-        }
-    </script>
+function demoEnded(kills, killer) {
+    var el = document.getElementById('streak-ended');
+    clearAnimate(el, 'ended');
+    el.className = killer ? 'ended-by-player' : 'ended-env';
+    show(el);
+    document.getElementById('ended-text').textContent = 'STREAK ENDED';
+    if (killer) {
+        document.getElementById('ended-count').textContent = 'by ' + killer + ' (' + kills + ' kills)';
+    } else {
+        document.getElementById('ended-count').textContent = kills + ' kill streak';
+    }
+    void el.offsetHeight;
+    el.classList.add('ended-animate');
+    _timers.ended = setTimeout(function() { hide(el); }, 2300);
+}
+
+var _kills = 7;
+function cycleKillCounter() {
+    _kills = (_kills >= 15) ? 1 : _kills + 1;
+    document.getElementById('kill-number').textContent = _kills;
+    var nextName = '', remaining = 0;
+    if      (_kills < 3)  { remaining = 3  - _kills; nextName = 'KILLING SPREE'; }
+    else if (_kills < 5)  { remaining = 5  - _kills; nextName = 'RAMPAGE';        }
+    else if (_kills < 7)  { remaining = 7  - _kills; nextName = 'DOMINATING';     }
+    else if (_kills < 10) { remaining = 10 - _kills; nextName = 'UNSTOPPABLE';    }
+    else if (_kills < 15) { remaining = 15 - _kills; nextName = 'GODLIKE';        }
+    var sp = document.getElementById('streak-progress');
+    if (nextName) {
+        document.getElementById('progress-text').textContent =
+            remaining + ' kill' + (remaining > 1 ? 's' : '') + ' → ' + nextName;
+        sp.classList.remove('hidden');
+    } else {
+        sp.classList.add('hidden');
+    }
+}
+</script>
 </body>
 </html>

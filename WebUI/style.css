@@ -1,7 +1,7 @@
 /* Reset */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* Ẩn video elements dùng để phát âm thanh — Gameface không có <audio> */
+/* Ẩn video elements dùng để phát âm thanh — Gameface không hỗ trợ <audio> */
 video { position: absolute; width: 0; height: 0; pointer-events: none; }
 
 body {
@@ -10,234 +10,255 @@ body {
     height: 100vh;
     overflow: hidden;
     font-family: 'Arial Black', Arial, sans-serif;
-    pointer-events: none; /* Không chặn click game */
+    pointer-events: none;
     user-select: none;
 }
 
-/* ----------------------------------------
-   Kill Counter — góc trên trái (BF3 style)
----------------------------------------- */
+/* Utility */
+.hidden { display: none !important; }
+
+@keyframes fadeOut {
+    0%   { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* ============================================================
+   1. KILL COUNTER — accent bar trái
+   ============================================================ */
 #kill-counter {
     position: fixed;
-    top: 30px;
-    left: 30px;
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(255, 60, 0, 0.6);
-    border-radius: 4px;
-    padding: 6px 12px;
-    color: #ff6600;
-    font-size: 22px;
-    font-weight: bold;
-    text-shadow: 0 0 8px #ff4400;
+    top: 28px;
+    left: 28px;
     display: flex;
-    align-items: center;
+    align-items: stretch;
+    background: rgba(0,0,0,0.72);
+    border: 1px solid rgba(255,80,0,0.4);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+#kill-accent-bar {
+    display: block;
+    width: 4px;
+    background: linear-gradient(180deg, #ff6600 0%, #cc2200 100%);
+    flex-shrink: 0;
+}
+
+#kill-inner {
+    display: block;
+    padding: 6px 14px 6px 10px;
 }
 
 #kill-icon {
     display: block;
-    font-size: 12px;
-    opacity: 0.7;
-    margin-right: 8px;
-    letter-spacing: 1px;
+    font-size: 10px;
+    font-family: Arial, sans-serif;
+    font-weight: normal;
+    letter-spacing: 3px;
+    color: rgba(255,120,60,0.7);
+    text-transform: uppercase;
+    margin-bottom: 2px;
 }
 
 #kill-number {
     display: block;
+    font-size: 30px;
+    font-weight: 900;
+    color: #ff6600;
+    text-shadow: 0 0 10px rgba(255,80,0,0.7), 0 0 22px rgba(255,60,0,0.35);
+    line-height: 1;
 }
 
-/* ----------------------------------------
-   Streak Progress — bên dưới kill counter (trái)
---------------------------------------- */
+/* Streak Progress */
 #streak-progress {
     position: fixed;
-    top: 68px;
-    left: 30px;
-    text-align: left;
+    top: 90px;
+    left: 28px;
 }
 
 #progress-text {
     display: block;
-    font-size: 13px;
-    color: #ffaa66;
-    text-shadow: 1px 1px 0 #000;
+    font-size: 12px;
     font-family: Arial, sans-serif;
     font-weight: normal;
-    opacity: 0.9;
-    letter-spacing: 1px;
-}
-
-/* ----------------------------------------
-   Revenge Badge — giữa màn hình
----------------------------------------- */
-#revenge-badge {
-    position: fixed;
-    top: 10%;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    animation: revengePop 0.3s ease-out;
-    white-space: nowrap;
-}
-
-#revenge-text {
-    display: block;
-    font-size: 52px;
-    text-align: center;
-    font-weight: 900;
-    color: #ff6600;
-    text-shadow:
-        0 0 12px #ff4400,
-        0 0 35px #aa2200,
-        2px 2px 0 #000;
-    letter-spacing: 6px;
-    text-transform: uppercase;
-}
-
-@keyframes revengePop {
-    0%   { transform: translateX(-50%) scale(0.4); opacity: 0; }
-    60%  { transform: translateX(-50%) scale(1.15); opacity: 1; }
-    100% { transform: translateX(-50%) scale(1);    opacity: 1; }
-}
-
-/* ----------------------------------------
-   Server Announce — streak của người khác
----------------------------------------- */
-#server-announce {
-    position: fixed;
-    top: 6%;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    white-space: nowrap;
-    animation: announcePop 0.3s ease-out;
-}
-
-#announce-name {
-    font-size: 28px;
-    font-weight: 900;
-    color: #66ccff;
-    text-shadow: 0 0 10px #0088ff, 2px 2px 0 #000;
-    letter-spacing: 3px;
-}
-
-#announce-streak {
-    font-size: 38px;
-    font-weight: 900;
-    color: #ffffff;
-    text-shadow:
-        0 0 10px #0088ff,
-        0 0 28px #0044aa,
-        2px 2px 0 #000;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-}
-
-#announce-kills {
-    font-size: 18px;
-    color: #99ddff;
+    color: #ffaa66;
     text-shadow: 1px 1px 0 #000;
-    margin-top: 4px;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
+    opacity: 0.82;
 }
 
-@keyframes announcePop {
-    0%   { transform: translateX(-50%) scale(0.6); opacity: 0; }
-    65%  { transform: translateX(-50%) scale(1.05); opacity: 1; }
-    100% { transform: translateX(-50%) scale(1);    opacity: 1; }
-}
-
-/* ----------------------------------------
-   First Blood — giữa màn hình
----------------------------------------- */
-#firstblood-badge {
-    position: fixed;
-    top: 10%;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    animation: firstBloodPop 0.3s ease-out;
-    white-space: nowrap;
-}
-
-#firstblood-text {
-    display: block;
-    font-size: 52px;
-    text-align: center;
-    font-weight: 900;
-    color: #ff2222;
-    text-shadow:
-        0 0 12px #ff0000,
-        0 0 35px #880000,
-        2px 2px 0 #000;
-    letter-spacing: 6px;
-    text-transform: uppercase;
-}
-
-@keyframes firstBloodPop {
-    0%   { transform: translateX(-50%) scale(0.4); opacity: 0; }
-    60%  { transform: translateX(-50%) scale(1.15); opacity: 1; }
-    100% { transform: translateX(-50%) scale(1);    opacity: 1; }
-}
-
-/* ----------------------------------------
-   Streak Message — top-center
----------------------------------------- */
+/* ============================================================
+   2. STREAK MESSAGE — panel với border-color per streak
+   ============================================================ */
 #streak-message {
     position: fixed;
-    top: 6%;
+    top: 5%;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
-    animation: streakFade 0.5s ease-out;
+    white-space: nowrap;
+    animation: streakSlideIn 3.0s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+
+#streak-panel {
+    display: block;
+    padding: 14px 44px 16px;
+    background: rgba(0,0,0,0.80);
+    border-top: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
 }
 
 #streak-name {
-    font-size: 48px;
+    display: block;
+    font-size: 46px;
     font-weight: 900;
-    letter-spacing: 4px;
+    letter-spacing: 7px;
     text-transform: uppercase;
+    line-height: 1;
+}
+
+#streak-divider {
+    display: block;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.3;
+    margin: 9px auto;
+    width: 55%;
 }
 
 #streak-kills {
-    font-size: 24px;
-    color: #ffcc00;
-    text-shadow: 0 0 8px #ff8800, 2px 2px 0 #000;
-    margin-top: 6px;
-    letter-spacing: 2px;
+    display: block;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    letter-spacing: 5px;
+    color: rgba(255,255,255,0.65);
+    text-transform: uppercase;
 }
 
-/* Per-streak colors */
+/* Per-streak colors — cascade qua currentColor xuống #streak-panel */
+.sk-killingspree #streak-panel { color: #ffaa00; }
 .sk-killingspree #streak-name {
     color: #ffaa00;
-    text-shadow: 0 0 12px #ff8800, 0 0 30px #ff6600, 2px 2px 0 #000;
+    text-shadow: 0 0 14px #ff8800, 0 0 36px rgba(255,120,0,0.45), 2px 2px 0 #000;
 }
+.sk-rampage #streak-panel { color: #ff6600; }
 .sk-rampage #streak-name {
     color: #ff6600;
-    text-shadow: 0 0 12px #ff4400, 0 0 30px #cc2200, 2px 2px 0 #000;
+    text-shadow: 0 0 14px #ff4400, 0 0 38px rgba(220,50,0,0.5), 2px 2px 0 #000;
 }
+.sk-dominating #streak-panel { color: #ff3300; }
 .sk-dominating #streak-name {
     color: #ff3300;
-    text-shadow: 0 0 12px #ff2200, 0 0 35px #cc0000, 2px 2px 0 #000;
+    text-shadow: 0 0 16px #ff1100, 0 0 42px rgba(200,0,0,0.55), 2px 2px 0 #000;
 }
+.sk-unstoppable #streak-panel { color: #cc44ff; }
 .sk-unstoppable #streak-name {
     color: #cc44ff;
-    text-shadow: 0 0 12px #aa00ff, 0 0 35px #6600cc, 2px 2px 0 #000;
+    text-shadow: 0 0 16px #aa00ff, 0 0 44px rgba(120,0,220,0.55), 2px 2px 0 #000;
 }
+.sk-godlike #streak-panel { color: #ffe040; }
 .sk-godlike #streak-name {
     color: #ffffff;
-    text-shadow: 0 0 15px #ffdd00, 0 0 40px #ffaa00, 2px 2px 0 #000;
+    text-shadow:
+        0 0 18px #ffee00,
+        0 0 48px rgba(255,210,0,0.65),
+        0 0 70px rgba(255,160,0,0.35),
+        2px 2px 0 #000;
 }
 
-@keyframes streakFade {
-    0%   { opacity: 0; transform: translateX(-50%) translateY(10px); }
-    20%  { opacity: 1; transform: translateX(-50%) translateY(0); }
-    80%  { opacity: 1; transform: translateX(-50%) translateY(0); }
-    100% { opacity: 0; transform: translateX(-50%) translateY(0); }
+@keyframes streakSlideIn {
+    0%   { opacity: 0; transform: translateX(-50%) translateY(-22px) scaleY(0.78); }
+    10%  { opacity: 1; transform: translateX(-50%) translateY(3px)   scaleY(1.05); }
+    18%  { transform: translateX(-50%) translateY(0) scaleY(1); }
+    72%  { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) translateY(0) scaleY(1); }
 }
 
-/* ----------------------------------------
-   Headshot Badge — hiện mỗi khi có headshot kill
----------------------------------------- */
+/* ============================================================
+   3. MULTI-KILL — ribbon với colored border
+   ============================================================ */
+#multikill-badge {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+    animation: ribbonPop 2.6s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+
+#multikill-ribbon {
+    display: block;
+    padding: 10px 56px;
+    background: rgba(0,0,0,0.82);
+    position: relative;
+}
+
+#multikill-ribbon::before,
+#multikill-ribbon::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+}
+#multikill-ribbon::before { top: 0; }
+#multikill-ribbon::after  { bottom: 0; }
+
+#multikill-name {
+    display: block;
+    font-weight: 900;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+}
+
+.mk-double #multikill-ribbon { border-left: 3px solid #ffdd00; border-right: 3px solid #ffdd00; }
+.mk-double #multikill-ribbon::before,
+.mk-double #multikill-ribbon::after { background: #ffdd00; }
+.mk-double #multikill-name {
+    font-size: 36px;
+    color: #ffdd00;
+    text-shadow: 0 0 12px #ffaa00, 0 0 28px rgba(255,160,0,0.45), 2px 2px 0 #000;
+}
+
+.mk-triple #multikill-ribbon { border-left: 3px solid #ff8800; border-right: 3px solid #ff8800; }
+.mk-triple #multikill-ribbon::before,
+.mk-triple #multikill-ribbon::after { background: #ff8800; }
+.mk-triple #multikill-name {
+    font-size: 42px;
+    color: #ff8800;
+    text-shadow: 0 0 14px #ff6600, 0 0 34px rgba(255,100,0,0.5), 2px 2px 0 #000;
+}
+
+.mk-quad #multikill-ribbon { border-left: 3px solid #ff3300; border-right: 3px solid #ff3300; }
+.mk-quad #multikill-ribbon::before,
+.mk-quad #multikill-ribbon::after { background: #ff3300; }
+.mk-quad #multikill-name {
+    font-size: 48px;
+    color: #ff3300;
+    text-shadow: 0 0 16px #ff1100, 0 0 40px rgba(200,0,0,0.55), 2px 2px 0 #000;
+}
+
+.mk-rampage #multikill-ribbon { border-left: 3px solid #cc44ff; border-right: 3px solid #cc44ff; }
+.mk-rampage #multikill-ribbon::before,
+.mk-rampage #multikill-ribbon::after { background: #cc44ff; }
+.mk-rampage #multikill-name {
+    font-size: 54px;
+    color: #cc44ff;
+    text-shadow: 0 0 18px #aa00ff, 0 0 46px rgba(140,0,240,0.55), 2px 2px 0 #000;
+}
+
+@keyframes ribbonPop {
+    0%   { transform: translateX(-50%) scaleX(0.15) scaleY(0.7); opacity: 0; }
+    12%  { transform: translateX(-50%) scaleX(1.06) scaleY(1.04); opacity: 1; }
+    22%  { transform: translateX(-50%) scaleX(1) scaleY(1); }
+    75%  { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) scaleX(1) scaleY(1); }
+}
+
+/* ============================================================
+   4. HEADSHOT — KHÔNG THAY ĐỔI
+   ============================================================ */
 #headshot-badge {
     position: fixed;
     top: 15%;
@@ -266,9 +287,6 @@ body {
     100% { transform: translateX(-50%) scale(1);    opacity: 1; }
 }
 
-/* ----------------------------------------
-   Headshot Message — giữa màn hình, bên dưới streak
----------------------------------------- */
 #headshot-message {
     position: fixed;
     top: 22%;
@@ -298,108 +316,194 @@ body {
     letter-spacing: 2px;
 }
 
-/* ----------------------------------------
-   Multi-Kill Badge — kiểu khác nhau theo loại
----------------------------------------- */
-#multikill-badge {
-    position: fixed;
-    top: 10%;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    animation: multiKillPop 0.25s ease-out;
-    white-space: nowrap;
-}
-
-#multikill-name {
-    display: block;
-    font-weight: 900;
-    letter-spacing: 5px;
-    text-transform: uppercase;
-}
-
-.mk-double #multikill-name {
-    font-size: 38px;
-    color: #ffdd00;
-    text-shadow: 0 0 12px #ffaa00, 0 0 30px #ff8800, 2px 2px 0 #000;
-}
-
-.mk-triple #multikill-name {
-    font-size: 44px;
-    color: #ff8800;
-    text-shadow: 0 0 12px #ff6600, 0 0 35px #ff4400, 2px 2px 0 #000;
-}
-
-.mk-quad #multikill-name {
-    font-size: 50px;
-    color: #ff3300;
-    text-shadow: 0 0 15px #ff2200, 0 0 40px #cc0000, 2px 2px 0 #000;
-}
-
-.mk-rampage #multikill-name {
-    font-size: 56px;
-    color: #cc44ff;
-    text-shadow: 0 0 15px #aa00ff, 0 0 45px #6600cc, 2px 2px 0 #000;
-}
-
-@keyframes multiKillPop {
-    0%   { transform: translateX(-50%) scale(0.6); opacity: 0; }
-    65%  { transform: translateX(-50%) scale(1.1); opacity: 1; }
-    100% { transform: translateX(-50%) scale(1);   opacity: 1; }
-}
-
-/* ----------------------------------------
-   Streak Ended
----------------------------------------- */
-#streak-ended {
-    position: fixed;
-    top: 40%;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-}
-
-#ended-text {
-    font-size: 28px;
-    text-shadow: 2px 2px 0 #000;
-}
-
-.ended-by-player #ended-text {
-    color: #ff4444;
-}
-
-.ended-env #ended-text {
-    color: #aaaaaa;
-}
-
-#ended-count {
-    font-size: 18px;
-    text-shadow: 1px 1px 0 #000;
-}
-
-.ended-by-player #ended-count {
-    color: #ff8888;
-}
-
-.ended-env #ended-count {
-    color: #888888;
-}
-
-
-/* ----------------------------------------
-   Utility
----------------------------------------- */
-.hidden {
-    display: none !important;
-}
-
 @keyframes headshotPop {
     0%   { transform: translateX(-50%) scale(0.7); opacity: 0; }
     60%  { transform: translateX(-50%) scale(1.08); opacity: 1; }
     100% { transform: translateX(-50%) scale(1);    opacity: 1; }
 }
 
-@keyframes fadeOut {
-    0%   { opacity: 1; }
-    100% { opacity: 0; }
+/* ============================================================
+   5. STREAK ENDED — panel + border
+   ============================================================ */
+#streak-ended {
+    position: fixed;
+    top: 38%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+    animation: endedFadeIn 2.2s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+
+#ended-panel {
+    display: block;
+    padding: 12px 38px;
+    background: rgba(0,0,0,0.76);
+}
+
+#ended-text {
+    display: block;
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+}
+
+#ended-count {
+    display: block;
+    font-size: 15px;
+    font-family: Arial, sans-serif;
+    letter-spacing: 2px;
+    margin-top: 4px;
+    opacity: 0.82;
+}
+
+.ended-by-player #ended-panel { border-top: 2px solid #ff4444; border-bottom: 2px solid #ff4444; }
+.ended-by-player #ended-text  { color: #ff4444; text-shadow: 0 0 12px rgba(200,0,0,0.6), 2px 2px 0 #000; }
+.ended-by-player #ended-count { color: #ff8888; text-shadow: 1px 1px 0 #000; }
+
+.ended-env #ended-panel { border-top: 2px solid #666; border-bottom: 2px solid #666; }
+.ended-env #ended-text  { color: #aaaaaa; text-shadow: 1px 1px 0 #000; }
+.ended-env #ended-count { color: #666; text-shadow: 1px 1px 0 #000; }
+
+@keyframes endedFadeIn {
+    0%   { opacity: 0; transform: translateX(-50%) scale(0.82); }
+    12%  { opacity: 1; transform: translateX(-50%) scale(1.06); }
+    22%  { transform: translateX(-50%) scale(1); }
+    75%  { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) scale(1); }
+}
+
+/* ============================================================
+   6. SERVER ANNOUNCE — panel + separator + blue border
+   ============================================================ */
+#server-announce {
+    position: fixed;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+    background: rgba(0,0,0,0.80);
+    border-top: 2px solid #0088ff;
+    border-bottom: 2px solid #0088ff;
+    padding: 12px 44px;
+    animation: announcePop 3.5s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+
+#announce-name {
+    display: block;
+    font-size: 20px;
+    font-weight: 900;
+    color: #66ccff;
+    text-shadow: 0 0 10px #0088ff, 2px 2px 0 #000;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+#announce-separator {
+    display: block;
+    height: 1px;
+    background: rgba(0,136,255,0.3);
+    margin: 7px auto;
+    width: 75%;
+}
+
+#announce-streak {
+    display: block;
+    font-size: 36px;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow: 0 0 12px #0088ff, 0 0 30px rgba(0,80,200,0.45), 2px 2px 0 #000;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+#announce-kills {
+    display: block;
+    font-size: 13px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    color: #99ddff;
+    text-shadow: 1px 1px 0 #000;
+    margin-top: 5px;
+    letter-spacing: 3px;
+}
+
+@keyframes announcePop {
+    0%   { transform: translateX(-50%) scale(0.72); opacity: 0; }
+    10%  { transform: translateX(-50%) scale(1.04); opacity: 1; }
+    20%  { transform: translateX(-50%) scale(1); }
+    78%  { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) scale(1); }
+}
+
+/* ============================================================
+   7. REVENGE — panel + orange border
+   ============================================================ */
+#revenge-badge {
+    position: fixed;
+    top: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+    background: rgba(0,0,0,0.76);
+    border-top: 2px solid #ff6600;
+    border-bottom: 2px solid #ff6600;
+    padding: 10px 48px;
+    animation: revengePop 2.6s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+
+#revenge-text {
+    display: block;
+    font-size: 50px;
+    font-weight: 900;
+    color: #ff6600;
+    text-shadow: 0 0 14px #ff4400, 0 0 38px rgba(220,60,0,0.45), 2px 2px 0 #000;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+}
+
+@keyframes revengePop {
+    0%   { transform: translateX(-50%) scale(0.45); opacity: 0; }
+    10%  { transform: translateX(-50%) scale(1.12); opacity: 1; }
+    20%  { transform: translateX(-50%) scale(1); }
+    75%  { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) scale(1); }
+}
+
+/* ============================================================
+   8. FIRST BLOOD — panel + red border
+   ============================================================ */
+#firstblood-badge {
+    position: fixed;
+    top: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+    background: rgba(0,0,0,0.76);
+    border-top: 2px solid #ff2222;
+    border-bottom: 2px solid #ff2222;
+    padding: 10px 48px;
+    animation: firstBloodPop 2.6s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+
+#firstblood-text {
+    display: block;
+    font-size: 50px;
+    font-weight: 900;
+    color: #ff2222;
+    text-shadow: 0 0 14px #ff0000, 0 0 40px rgba(180,0,0,0.55), 2px 2px 0 #000;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+}
+
+@keyframes firstBloodPop {
+    0%   { transform: translateX(-50%) scale(0.45); opacity: 0; }
+    10%  { transform: translateX(-50%) scale(1.14); opacity: 1; }
+    20%  { transform: translateX(-50%) scale(1); }
+    75%  { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) scale(1); }
 }

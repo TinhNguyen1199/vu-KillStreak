@@ -268,12 +268,9 @@ function showStreakMessage(streakName, kills) {
 
     clearTimeout(streakTimer);
     streakTimer = setTimeout(function() {
-        el.style.animation = 'fadeOut 0.5s ease forwards';
-        setTimeout(function() {
-            el.classList.add('hidden');
-            el.style.animation = '';
-        }, 500);
-    }, STREAK_DISPLAY_MS);
+        el.classList.add('hidden');
+        el.style.animation = '';
+    }, 3100);
 }
 
 // ----------------------------------------
@@ -366,9 +363,9 @@ function showRevengeBadge() {
     el.style.animation = '';
     clearTimeout(_revengeBadgeTimer);
     _revengeBadgeTimer = setTimeout(function() {
-        el.style.animation = 'fadeOut 0.5s ease forwards';
-        setTimeout(function() { el.classList.add('hidden'); el.style.animation = ''; }, 500);
-    }, STREAK_DISPLAY_MS);
+        el.classList.add('hidden');
+        el.style.animation = '';
+    }, 2700);
 }
 
 // ----------------------------------------
@@ -413,9 +410,9 @@ function showServerAnnounce(killerName, streakName, kills) {
     el.style.animation = '';
     clearTimeout(_serverAnnounceTimer);
     _serverAnnounceTimer = setTimeout(function() {
-        el.style.animation = 'fadeOut 0.5s ease forwards';
-        setTimeout(function() { el.classList.add('hidden'); el.style.animation = ''; }, 500);
-    }, STREAK_DISPLAY_MS + 1000);
+        el.classList.add('hidden');
+        el.style.animation = '';
+    }, 3600);
 }
 
 // ----------------------------------------
@@ -432,12 +429,9 @@ function showFirstBloodBadge() {
     el.style.animation = '';
     clearTimeout(_firstBloodTimer);
     _firstBloodTimer = setTimeout(function() {
-        el.style.animation = 'fadeOut 0.5s ease forwards';
-        setTimeout(function() {
-            el.classList.add('hidden');
-            el.style.animation = '';
-        }, 500);
-    }, STREAK_DISPLAY_MS);
+        el.classList.add('hidden');
+        el.style.animation = '';
+    }, 2700);
 }
 
 // ----------------------------------------
@@ -468,12 +462,9 @@ function showMultiKillBadge(name, count) {
 
     clearTimeout(_multiKillTimer);
     _multiKillTimer = setTimeout(function() {
-        el.style.animation = 'fadeOut 0.5s ease forwards';
-        setTimeout(function() {
-            el.classList.add('hidden');
-            el.style.animation = '';
-        }, 500);
-    }, STREAK_DISPLAY_MS);
+        el.classList.add('hidden');
+        el.style.animation = '';
+    }, 2700);
 }
 
 
@@ -501,9 +492,13 @@ function showStreakEnded(oldStreak, killerName) {
     }
 
     el.classList.remove('hidden');
+    el.style.animation = 'none';
+    el.offsetHeight;
+    el.style.animation = '';
 
     clearTimeout(endedTimer);
     endedTimer = setTimeout(function() {
         el.classList.add('hidden');
-    }, ENDED_DISPLAY_MS);
+        el.style.animation = '';
+    }, 2300);
 }

@@ -12,10 +12,13 @@
 
     <!-- Âm thanh: <video> elements được tạo động trong JS (Gameface không hỗ trợ <audio> hay Web Audio API) -->
 
-    <!-- Hiển thị số kill streak góc trên phải -->
+    <!-- Hiển thị số kill streak góc trên trái -->
     <div id="kill-counter" class="hidden">
-        <div id="kill-icon">KILLS</div>
-        <div id="kill-number">0</div>
+        <div id="kill-accent-bar"></div>
+        <div id="kill-inner">
+            <div id="kill-icon">KILLS</div>
+            <div id="kill-number">0</div>
+        </div>
     </div>
 
     <!-- Streak progress — bên dưới kill counter -->
@@ -31,6 +34,7 @@
     <!-- Server Announce — streak của người khác -->
     <div id="server-announce" class="hidden">
         <div id="announce-name"></div>
+        <div id="announce-separator"></div>
         <div id="announce-streak"></div>
         <div id="announce-kills"></div>
     </div>
@@ -42,8 +46,11 @@
 
     <!-- Thông báo streak lớn ở giữa màn hình -->
     <div id="streak-message" class="hidden">
-        <div id="streak-name">KILLING SPREE</div>
-        <div id="streak-kills">3 KILLS</div>
+        <div id="streak-panel">
+            <div id="streak-name">KILLING SPREE</div>
+            <div id="streak-divider"></div>
+            <div id="streak-kills">3 KILLS</div>
+        </div>
     </div>
 
     <!-- Badge headshot đơn — hiện mỗi khi có headshot kill -->
@@ -57,13 +64,17 @@
 
     <!-- Badge multi-kill (Double Kill / Triple Kill / ...) -->
     <div id="multikill-badge" class="hidden mk-double">
-        <div id="multikill-name">DOUBLE KILL</div>
+        <div id="multikill-ribbon">
+            <div id="multikill-name">DOUBLE KILL</div>
+        </div>
     </div>
 
     <!-- Thông báo streak kết thúc (với killer name) -->
     <div id="streak-ended" class="hidden">
-        <div id="ended-text">Streak Ended</div>
-        <div id="ended-count">15 kill streak</div>
+        <div id="ended-panel">
+            <div id="ended-text">Streak Ended</div>
+            <div id="ended-count">15 kill streak</div>
+        </div>
     </div>
 
     <script src="script.js"></script>

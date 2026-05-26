@@ -1,5 +1,69 @@
 # KillStreak Mod — Battlefield 3 (Venice Unleashed)
 
+> [English](#english) | [Tiếng Việt](#tiếng-việt)
+
+---
+
+## English
+
+A Venice Unleashed mod that adds **custom kill sounds** and a **Kill Streak HUD system** to Battlefield 3.
+
+### Features
+
+| Feature | Description |
+|---------|-------------|
+| **Kill Sound** | Plays a custom sound on every kill |
+| **Headshot** | Separate badge and sound for headshot kills |
+| **First Blood** | Large red badge + sound for the first kill of the round |
+| **Revenge Kill** | Badge + sound when you kill the player who last killed you |
+| **Multi-Kill** | Announces Double / Triple / Quad Kill / Rampage within a 4-second window |
+| **Kill Streak** | Tracks consecutive kills and shows milestone messages (3 / 5 / 7 / 10 / 15) |
+| **Headshot Streak** | Tracks consecutive headshots with dedicated milestones (2 / 3 / 5) |
+| **Server Announce** | Broadcasts a player's name server-wide when they reach a 10+ kill streak |
+| **Streak Ended** | Shows who ended your streak and plays a contextual sound |
+
+**HUD elements:** Kill counter (top-left), streak progress hint, centered milestone banners with per-streak accent colors, animated multi-kill ribbon, and streak-ended panel.
+
+### Requirements
+
+- Battlefield 3 (Origin / EA App)
+- [Venice Unleashed](https://veniceunleashed.net)
+- `vuicc.exe` — to compile the WebUI after any changes
+- FFmpeg — to convert audio files to `.webm` (only needed when adding custom sounds)
+
+### Installation
+
+**Step 1 — Install Venice Unleashed**
+
+Download and install VU Launcher from [veniceunleashed.net](https://veniceunleashed.net), then log in with your EA account and launch it once to initialize the folders.
+
+**Step 2 — Copy the mod**
+
+Place the `KillStreak` folder into your VU Mods directory:
+
+```
+%USERPROFILE%\Documents\Mods\KillStreak\
+```
+
+The folder must contain:
+
+```
+KillStreak\
+├── mod.json
+├── ui.vuic        ← pre-compiled WebUI (already included)
+└── ext\
+```
+
+**Step 3 — Enable the mod**
+
+Open **VU Launcher** → **Mods** tab → find **KillStreak** → toggle it on → launch the game.
+
+> For server use: copy the mod folder into your server's `Mods` directory and add `vars.modList KillStreak` to your server config. Clients connecting to the server will automatically receive the mod.
+
+---
+
+## Tiếng Việt
+
 Mod thêm **âm thanh tùy chỉnh khi hạ gục địch** và hệ thống **Kill Streak** hiển thị trên HUD cho Battlefield 3 thông qua nền tảng Venice Unleashed.
 
 ---
