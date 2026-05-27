@@ -147,36 +147,31 @@ setInterval(function() {
 }, 50);
 
 // ============================================================
-// Priority Queue — dành riêng cho adrenaline, không bị block bởi âm thanh khác
+// Adrenaline Sound — fire-and-forget, phát ngay không cần queue,
+// không bị block bởi bất kỳ âm thanh nào khác đang phát.
 // ============================================================
-var _adrQueue = [];
-var _adrPlaying = false;
-
 function requestAdrenalineSound() {
-    _adrQueue.push({ name: 'adrenaline' });
-}
-
-function clearAdrenalineQueue() {
-    _adrQueue = [];
-}
-
-setInterval(function() {
-    if (_adrQueue.length === 0 || _adrPlaying) return;
-    _adrPlaying = true;
-    var item = _adrQueue.shift();
     var vid = document.createElement('video');
-    vid.src = 'sounds/' + item.name + '.webm';
+    vid.src = 'sounds/adrenaline.webm';
     vid.preload = 'auto';
     vid.style.cssText = 'position:absolute; width:0; height:0; pointer-events:none;';
     document.body.appendChild(vid);
-    vid.play();
-    vid.addEventListener('ended', function() {
-        _adrPlaying = false;
-        if (document.body.contains(vid)) {
-            document.body.removeChild(vid);
+
+    function _cleanup() {
+        if (document.body.contains(vid)) document.body.removeChild(vid);
+    }
+    vid.addEventListener('ended', _cleanup);
+    vid.addEventListener('error', _cleanup);
+
+    try {
+        var result = vid.play();
+        if (result && typeof result.then === 'function') {
+            result.catch(_cleanup);
         }
-    });
-}, 50);
+    } catch (e) {
+        _cleanup();
+    }
+}
 
 // Kill categories — dừng âm thanh cũ trước khi phát mới
 var _killCategories = ['kill_normal', 'kill_headshot', 'headshot_double', 'headshot_triple', 'headshot_multi'];
